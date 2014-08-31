@@ -23,9 +23,15 @@ exitHook(function () {
 	console.log('exiting');
 });
 
+// you can add multiple hooks, even across files
+exitHook(function () {
+	console.log('exiting 2');
+});
+
 throw new Error('unicorns');
 
 //=> exiting
+//=> exiting 2
 ```
 
 

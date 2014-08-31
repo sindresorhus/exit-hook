@@ -3,7 +3,11 @@ var test = require('ava');
 var exitHook = require('./');
 
 test(function (t) {
-	t.plan(1);
+	t.plan(2);
+
+	exitHook(function () {
+		t.assert(true);
+	});
 
 	exitHook(function () {
 		t.assert(true);
