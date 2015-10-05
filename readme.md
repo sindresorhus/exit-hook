@@ -9,7 +9,7 @@ Useful for cleaning up.
 
 ## Install
 
-```sh
+```
 $ npm install --save exit-hook
 ```
 
@@ -17,21 +17,21 @@ $ npm install --save exit-hook
 ## Usage
 
 ```js
-var exitHook = require('exit-hook');
+const exitHook = require('exit-hook');
 
-exitHook(function () {
+exitHook(() => {
 	console.log('exiting');
 });
 
 // you can add multiple hooks, even across files
-exitHook(function () {
+exitHook(() => {
 	console.log('exiting 2');
 });
 
 throw new Error('unicorns');
 
-//=> exiting
-//=> exiting 2
+//=> 'exiting'
+//=> 'exiting 2'
 ```
 
 
