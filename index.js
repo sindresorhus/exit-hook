@@ -54,6 +54,8 @@ module.exports = function (cb) {
 
 	if (cbs.length === 1) {
 		process.once('exit', exit);
+		process.once('beforeExit', exit.bind(null, true, -128));
+		process.once('SIGHUP', exit.bind(null, true, 1));
 		process.once('SIGINT', exit.bind(null, true, 2));
 		process.once('SIGTERM', exit.bind(null, true, 15));
 	}
