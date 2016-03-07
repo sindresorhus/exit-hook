@@ -2,6 +2,7 @@
 
 var cbs = [];
 var called = false;
+var waitingFor = 0;
 
 function exit(exit, signal) {
 	if (called) {
@@ -11,11 +12,31 @@ function exit(exit, signal) {
 	called = true;
 
 	cbs.forEach(function (el) {
-		el();
+		// can only perform async ops on SIGINT/SIGTERM
+		if (exit && el.length) {
+			// el expects a callback
+			waitingFor++;
+
+			el(stepTowardExit);
+		}
+		else {
+			el()
+		}
 	});
 
-	if (exit === true) {
-		process.exit(128 + signal);
+	if (!waitingFor) doExit()
+
+	function stepTowardExit() {
+		process.nextTick(function() {
+			if (doExit && --waitingFor === 0) doExit();
+		})
+	}
+
+	function doExit() {
+		doExit = null;
+		if (exit === true) {
+			process.exit(128 + signal);
+		}
 	}
 };
 
