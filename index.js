@@ -3,6 +3,7 @@
 var cbs = [];
 var called = false;
 var waitingFor = 0;
+var forceTimeout = null;
 
 function exit(exit, signal) {
 	if (called) {
@@ -26,6 +27,11 @@ function exit(exit, signal) {
 
 	if (!waitingFor) {
 		doExit();
+	} else {
+		// Timeout to force exit after 10 seconds
+		forceTimeout = setTimeout(function() {
+			doExit();
+		}, 10000);
 	}
 
 	function stepTowardExit() {
@@ -42,6 +48,7 @@ function exit(exit, signal) {
 			return;
 		}
 		doExitDone = true;
+		clearTimeout(forceTimeout);
 
 		if (exit === true) {
 			process.exit(128 + signal);
