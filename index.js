@@ -20,25 +20,34 @@ function exit(exit, signal) {
 			el(stepTowardExit);
 		}
 		else {
-			el()
+			el();
 		}
 	});
 
-	if (!waitingFor) doExit()
+	if (!waitingFor) {
+		doExit();
+	}
 
 	function stepTowardExit() {
 		process.nextTick(function() {
-			if (doExit && --waitingFor === 0) doExit();
-		})
+			if (--waitingFor === 0) {
+				doExit();
+			}
+		});
 	}
 
+	var doExitDone = false;
 	function doExit() {
-		doExit = null;
+		if (doExitDone) {
+			return;
+		}
+		doExitDone = true;
+
 		if (exit === true) {
 			process.exit(128 + signal);
 		}
 	}
-};
+}
 
 module.exports = function (cb) {
 	cbs.push(cb);
