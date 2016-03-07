@@ -13,7 +13,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "node test.js"
+    "test": "node test/sync.js && node test/async.js"
   },
   "files": [
     "index.js"
