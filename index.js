@@ -99,7 +99,7 @@ add.uncaughtExceptionHandler = function(cb) {
 };
 
 // Configure async force exit timeout
-add.asyncTimeout = function(ms) {
+add.forceExitTimeout = function(ms) {
 	asyncTimeoutMs = ms;
 };
 

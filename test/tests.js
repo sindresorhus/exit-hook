@@ -65,3 +65,12 @@ test('async uncaught exception handler', t => {
 			t.is(code, 0);
 		});
 });
+
+test('async exit timeout', t => {
+	t.plan(2);
+	return testInSub('asyncExitTimeout')
+		.then(([code, output]) => {
+			t.is(output, 'SUCCESS');
+			t.is(code, 0);
+		});
+});
