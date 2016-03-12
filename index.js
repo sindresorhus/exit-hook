@@ -1,12 +1,12 @@
 'use strict';
 
-var cbs = [];
-var errCbs = [];
+var hooks = [];
+var errHooks = [];
 var called = false;
 var waitingFor = 0;
 var asyncTimeoutMs = 10000;
 
-function exit(exit, signal, err) {
+function exit(exit, code, err) {
 	// Only execute hooks once
 	if (called) {
 		return;
@@ -17,9 +17,9 @@ function exit(exit, signal, err) {
 	// Run hooks
 	if (err) {
 		// Uncaught exception, run error hooks
-		errCbs.map(runHook.bind(null, 1, err));
+		errHooks.map(runHook.bind(null, 1, err));
 	}
-	cbs.map(runHook.bind(null, 0, null));
+	hooks.map(runHook.bind(null, 0, null));
 
 	if (!waitingFor) {
 		// No asynchronous hooks, exit immediately
@@ -71,30 +71,30 @@ function exit(exit, signal, err) {
 
 		if (exit === true) {
 			// All handlers should be called even if the exit-hook handler was registered first
-			process.nextTick(process.exit.bind(128 + signal));
+			process.nextTick(process.exit.bind(code));
 		}
 	}
 }
 
 // Add a hook
-function add(cb) {
-	cbs.push(cb);
+function add(hook) {
+	hooks.push(hook);
 
-	if (cbs.length === 1) {
+	if (hooks.length === 1) {
 		process.once('exit', exit);
-		process.once('beforeExit', exit.bind(null, true, -128));
-		process.once('SIGHUP', exit.bind(null, true, 1));
-		process.once('SIGINT', exit.bind(null, true, 2));
-		process.once('SIGTERM', exit.bind(null, true, 15));
+		process.once('beforeExit', exit.bind(null, true, 0));
+		process.once('SIGHUP', exit.bind(null, true, 128 + 1));
+		process.once('SIGINT', exit.bind(null, true, 128 + 2));
+		process.once('SIGTERM', exit.bind(null, true, 128 + 15));
 	}
 }
 
 // Add an uncaught exception handler
-add.uncaughtExceptionHandler = function(cb) {
-	errCbs.push(cb);
+add.uncaughtExceptionHandler = function(hook) {
+	errHooks.push(hook);
 
-	if (errCbs.length === 1) {
-		process.once('uncaughtException', exit.bind(null, true, -127));
+	if (errHooks.length === 1) {
+		process.once('uncaughtException', exit.bind(null, true, 1));
 	}
 };
 
