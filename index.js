@@ -71,7 +71,7 @@ function exit(exit, code, err) {
 
 		if (exit === true) {
 			// All handlers should be called even if the exit-hook handler was registered first
-			process.nextTick(process.exit.bind(code));
+			process.nextTick(process.exit.bind(null, code));
 		}
 	}
 }
