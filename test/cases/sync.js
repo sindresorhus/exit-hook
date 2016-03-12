@@ -10,4 +10,8 @@ exitHook(function () {
 	stub.called();
 });
 
-stub.addCheck(2);
+process.on('beforeExit', function() {
+	stub.called();
+});
+
+stub.addCheck(3);

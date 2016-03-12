@@ -47,3 +47,21 @@ test('sync handlers', t => {
 			t.is(code, 0);
 		});
 });
+
+test('async handlers', t => {
+	t.plan(2);
+	return testInSub('async')
+		.then(([code, output]) => {
+			t.is(output, 'SUCCESS');
+			t.is(code, 0);
+		});
+});
+
+test('async uncaught exception handler', t => {
+	t.plan(2);
+	return testInSub('asyncErr')
+		.then(([code, output]) => {
+			t.is(output, 'SUCCESS');
+			t.is(code, 0);
+		});
+});
