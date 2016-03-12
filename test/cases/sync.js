@@ -10,7 +10,7 @@ exitHook(function () {
 	stub.called();
 });
 
-process.on('beforeExit', function() {
+process.on('exit', function() {
 	stub.called();
 });
 

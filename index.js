@@ -90,19 +90,11 @@ function add(hook) {
 }
 
 // Add an uncaught exception handler
-<<<<<<< HEAD
 add.uncaughtExceptionHandler = function(hook) {
 	errHooks.push(hook);
 
 	if (errHooks.length === 1) {
 		process.once('uncaughtException', exit.bind(null, true, 1));
-=======
-add.uncaughtExceptionHandler = function(cb) {
-	errHooks.push(cb);
-
-	if (errHooks.length === 1) {
-		process.once('uncaughtException', exit.bind(null, true, -127));
->>>>>>> c39dda066eac72872440c80ee09aec2ce8e0a429
 	}
 };
 
