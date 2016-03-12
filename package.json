@@ -13,7 +13,7 @@
     "node": ">=0.10.0"
   },
   "scripts": {
-    "test": "node test/sync.js && node test/async.js"
+    "test": "ava"
   },
   "files": [
     "index.js"
@@ -28,12 +28,19 @@
     "shutdown",
     "sigterm",
     "sigint",
+    "sighup",
     "terminate",
     "kill",
     "stop",
     "event"
   ],
   "devDependencies": {
-    "ava": "0.0.4"
+    "ava": "0.13.0"
+  },
+  "ava": {
+    "files": [
+      "test/*.js",
+      "!tests/cases/*"
+    ]
   }
 }
