@@ -26,6 +26,10 @@ module.exports = function (cb) {
 		process.once('exit', exit);
 		process.once('SIGINT', exit.bind(null, true, 2));
 		process.once('SIGTERM', exit.bind(null, true, 15));
+		process.once('uncaughtException', function (err) {
+			console.log(err.stack);
+			exit.bind(null, true, -129);
+		});
 
 		// PM2 Cluster shutdown message. Caught to support async handlers with pm2, needed because
 		// explicitly calling process.exit() doesn't trigger the beforeExit event, and the exit
