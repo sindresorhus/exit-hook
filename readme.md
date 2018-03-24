@@ -6,6 +6,8 @@ The `process.on('exit')` event doesn't catch all the ways a process can exit.
 
 This package is useful for cleaning up before exiting.
 
+Check out [`async-exit-hook`](https://github.com/tapppi/async-exit-hook) if you need async support.
+
 
 ## Install
 
