@@ -1,17 +1,7 @@
-'use strict';
-var test = require('ava');
-var exitHook = require('./');
+import test from 'ava';
+import execa from 'execa';
 
-test(function (t) {
-	t.plan(2);
-
-	exitHook(function () {
-		t.assert(true);
-	});
-
-	exitHook(function () {
-		t.assert(true);
-	});
-
-	process.exit();
+test('main', async t => {
+	const {stdout} = await execa(process.execPath, ['fixture.js']);
+	t.is(stdout, 'foo\nbar');
 });

@@ -4,13 +4,13 @@
 
 The `process.on('exit')` event doesn't catch all the ways a process can exit.
 
-Useful for cleaning up.
+This package is useful for cleaning up before exiting.
 
 
 ## Install
 
 ```
-$ npm install --save exit-hook
+$ npm install exit-hook
 ```
 
 
@@ -20,21 +20,21 @@ $ npm install --save exit-hook
 const exitHook = require('exit-hook');
 
 exitHook(() => {
-	console.log('exiting');
+	console.log('Exiting');
 });
 
-// you can add multiple hooks, even across files
+// You can add multiple hooks, even across files
 exitHook(() => {
-	console.log('exiting 2');
+	console.log('Exiting 2');
 });
 
-throw new Error('unicorns');
+throw new Error('🦄');
 
-//=> 'exiting'
-//=> 'exiting 2'
+//=> 'Exiting'
+//=> 'Exiting 2'
 ```
 
 
 ## License
 
-MIT © [Sindre Sorhus](http://sindresorhus.com)
+MIT © [Sindre Sorhus](https://sindresorhus.com)
