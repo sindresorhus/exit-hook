@@ -36,6 +36,11 @@ throw new Error('🦄');
 //=> 'Exiting 2'
 ```
 
+## Removing an exit hook
+```js
+const unsubscribe = exitHook(() => {});
+unsubscribe();
+```
 
 ## License
 

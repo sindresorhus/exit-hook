@@ -36,4 +36,9 @@ module.exports = callback => {
 			}
 		});
 	}
+
+	// Return an unsubscribe function
+	return () => {
+		callbacks.delete(callback);
+	};
 };
