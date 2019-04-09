@@ -9,4 +9,10 @@ exitHook(() => {
 	console.log('bar');
 });
 
-process.exit();
+const unsubscribe = exitHook(() => {
+	console.log('baz');
+});
+
+unsubscribe();
+
+process.exit(); // eslint-disable-line unicorn/no-process-exit

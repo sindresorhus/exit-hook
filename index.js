@@ -36,4 +36,8 @@ module.exports = callback => {
 			}
 		});
 	}
+
+	return () => {
+		callbacks.delete(callback);
+	};
 };
