@@ -47,6 +47,19 @@ unsubscribe();
 ```
 
 
+## API
+
+### exitHook(callback)
+
+Returns a function that removes the hook when called.
+
+#### callback
+
+Type: `Function`
+
+The callback to execute when the process exits.
+
+
 ## License
 
 MIT © [Sindre Sorhus](https://sindresorhus.com)
