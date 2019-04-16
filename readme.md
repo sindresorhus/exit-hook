@@ -46,6 +46,7 @@ const unsubscribe = exitHook(() => {});
 unsubscribe();
 ```
 
+
 ## API
 
 ### exitHook(callback)
@@ -57,6 +58,7 @@ Returns a function that removes the hook when called.
 Type: `Function`
 
 The callback to execute when the process exits.
+
 
 ## License
 
