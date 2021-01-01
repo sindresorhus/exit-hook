@@ -1,4 +1,4 @@
-# exit-hook [![Build Status](https://travis-ci.org/sindresorhus/exit-hook.svg?branch=master)](https://travis-ci.org/sindresorhus/exit-hook)
+# exit-hook
 
 > Run some code when the process exits
 
