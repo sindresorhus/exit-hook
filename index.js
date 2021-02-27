@@ -1,15 +1,15 @@
 'use strict';
 
 const callbacks = new Set();
-let called = false;
-let registered = false;
+let isCalled = false;
+let isRegistered = false;
 
 function exit(exit, signal) {
-	if (called) {
+	if (isCalled) {
 		return;
 	}
 
-	called = true;
+	isCalled = true;
 
 	for (const callback of callbacks) {
 		callback();
@@ -23,8 +23,8 @@ function exit(exit, signal) {
 module.exports = callback => {
 	callbacks.add(callback);
 
-	if (!registered) {
-		registered = true;
+	if (!isRegistered) {
+		isRegistered = true;
 
 		process.once('exit', exit);
 		process.once('SIGINT', exit.bind(null, true, 2));

@@ -6,13 +6,11 @@ The `process.on('exit')` event doesn't catch all the ways a process can exit.
 
 This package is useful for cleaning up before exiting.
 
-
 ## Install
 
 ```
 $ npm install exit-hook
 ```
-
 
 ## Usage
 
@@ -44,7 +42,6 @@ const unsubscribe = exitHook(() => {});
 unsubscribe();
 ```
 
-
 ## API
 
 ### exitHook(callback)
@@ -56,7 +53,6 @@ Returns a function that removes the hook when called.
 Type: `Function`
 
 The callback to execute when the process exits.
-
 
 ---
 

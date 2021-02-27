@@ -4,10 +4,11 @@
 	"description": "Run some code when the process exits",
 	"license": "MIT",
 	"repository": "sindresorhus/exit-hook",
+	"funding": "https://github.com/sponsors/sindresorhus",
 	"author": {
 		"name": "Sindre Sorhus",
 		"email": "sindresorhus@gmail.com",
-		"url": "sindresorhus.com"
+		"url": "https://sindresorhus.com"
 	},
 	"engines": {
 		"node": ">=6"

@@ -1,5 +1,5 @@
 import {expectType} from 'tsd';
-import exitHook = require('.');
+import exitHook = require('./index.js');
 
 const unsubscribe = exitHook(() => {});
 
