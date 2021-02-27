@@ -2,6 +2,7 @@
 
 const callbacks = new Set();
 let called = false;
+let registered = false;
 
 function exit(exit, signal) {
 	if (called) {
@@ -22,7 +23,9 @@ function exit(exit, signal) {
 module.exports = callback => {
 	callbacks.add(callback);
 
-	if (callbacks.size === 1) {
+	if (!registered) {
+		registered = true;
+
 		process.once('exit', exit);
 		process.once('SIGINT', exit.bind(null, true, 2));
 		process.once('SIGTERM', exit.bind(null, true, 15));
