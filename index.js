@@ -11,13 +11,14 @@ function exit(exit, signal) {
 
 	isCalled = true;
 
-	for (const callback of callbacks) {
-		callback();
-	}
+	const maybeExit = () => {
+		if (exit === true) {
+			process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
+		}
+	};
 
-	if (exit === true) {
-		process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
-	}
+	Promise.all(Array.from(callbacks).map(fn => fn())).then(maybeExit); // eslint-disable-line unicorn/prefer-spread
+	setTimeout(maybeExit, 15000).unref();
 }
 
 module.exports = callback => {
