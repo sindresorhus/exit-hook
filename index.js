@@ -1,10 +1,10 @@
-'use strict';
+import process from 'node:process';
 
 const callbacks = new Set();
 let isCalled = false;
 let isRegistered = false;
 
-function exit(exit, signal) {
+function exit(shouldManuallyExit, signal) {
 	if (isCalled) {
 		return;
 	}
@@ -15,20 +15,20 @@ function exit(exit, signal) {
 		callback();
 	}
 
-	if (exit === true) {
+	if (shouldManuallyExit === true) {
 		process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
 	}
 }
 
-module.exports = callback => {
-	callbacks.add(callback);
+export default function exitHook(onExit) {
+	callbacks.add(onExit);
 
 	if (!isRegistered) {
 		isRegistered = true;
 
 		process.once('exit', exit);
-		process.once('SIGINT', exit.bind(null, true, 2));
-		process.once('SIGTERM', exit.bind(null, true, 15));
+		process.once('SIGINT', exit.bind(undefined, true, 2));
+		process.once('SIGTERM', exit.bind(undefined, true, 15));
 
 		// PM2 Cluster shutdown message. Caught to support async handlers with pm2, needed because
 		// explicitly calling process.exit() doesn't trigger the beforeExit event, and the exit
@@ -41,6 +41,6 @@ module.exports = callback => {
 	}
 
 	return () => {
-		callbacks.delete(callback);
+		callbacks.delete(onExit);
 	};
-};
+}

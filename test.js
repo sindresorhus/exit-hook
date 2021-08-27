@@ -1,6 +1,7 @@
+import process from 'node:process';
 import test from 'ava';
 import execa from 'execa';
-import exitHook from '.';
+import exitHook from './index.js';
 
 test('main', async t => {
 	const {stdout} = await execa(process.execPath, ['fixture.js']);

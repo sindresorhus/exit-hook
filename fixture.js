@@ -1,5 +1,5 @@
-'use strict';
-const exitHook = require('.');
+import process from 'node:process';
+import exitHook from './index.js';
 
 exitHook(() => {
 	console.log('foo');
@@ -15,4 +15,4 @@ const unsubscribe = exitHook(() => {
 
 unsubscribe();
 
-process.exit(); // eslint-disable-line unicorn/no-process-exit
+process.exit(0); // eslint-disable-line unicorn/no-process-exit

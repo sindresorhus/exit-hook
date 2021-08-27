@@ -1,7 +1,7 @@
 import {expectType} from 'tsd';
-import exitHook = require('./index.js');
+import exitHook from './index.js';
 
-const unsubscribe = exitHook(() => {});
+const unsubscribe = exitHook(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
 expectType<() => void>(unsubscribe);
 unsubscribe();

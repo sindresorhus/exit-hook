@@ -15,7 +15,7 @@ $ npm install exit-hook
 ## Usage
 
 ```js
-const exitHook = require('exit-hook');
+import exitHook from 'exit-hook';
 
 exitHook(() => {
 	console.log('Exiting');
@@ -35,7 +35,7 @@ throw new Error('🦄');
 Removing an exit hook:
 
 ```js
-const exitHook = require('exit-hook');
+import exitHook from 'exit-hook';
 
 const unsubscribe = exitHook(() => {});
 
@@ -44,15 +44,15 @@ unsubscribe();
 
 ## API
 
-### exitHook(callback)
+### exitHook(onExit)
 
 Returns a function that removes the hook when called.
 
-#### callback
+#### onExit
 
 Type: `Function`
 
-The callback to execute when the process exits.
+The callback function to execute when the process exits.
 
 ---
 

@@ -5,12 +5,12 @@ The `process.on('exit')` event doesn't catch all the ways a process can exit.
 
 This package is useful for cleaning up before exiting.
 
-@param callback - The callback to execute when the process exits.
+@param onExit - The callback function to execute when the process exits.
 @returns A function that removes the hook when called.
 
 @example
 ```
-import exitHook = require('exit-hook');
+import exitHook from 'exit-hook';
 
 exitHook(() => {
 	console.log('Exiting');
@@ -32,6 +32,4 @@ const unsubscribe = exitHook(() => {});
 unsubscribe();
 ```
 */
-declare function exitHook(callback: () => void): () => void;
-
-export = exitHook;
+export default function exitHook(onExit: () => void): () => void;
