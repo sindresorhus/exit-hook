@@ -1,6 +1,6 @@
 {
 	"name": "exit-hook",
-	"version": "2.2.1",
+	"version": "3.0.0",
 	"description": "Run some code when the process exits",
 	"license": "MIT",
 	"repository": "sindresorhus/exit-hook",
