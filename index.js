@@ -12,7 +12,7 @@ function exit(shouldManuallyExit, signal) {
 	isCalled = true;
 
 	for (const callback of callbacks) {
-		callback();
+		callback(signal);
 	}
 
 	if (shouldManuallyExit === true) {
