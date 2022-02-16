@@ -8,6 +8,11 @@ test('main', async t => {
 	t.is(stdout, 'foo\nbar');
 });
 
+test('main-async', async t => {
+	const {stdout} = await execa(process.execPath, ['fixture-async.js']);
+	t.is(stdout, 'foo\nbar\nquux');
+});
+
 test('listener count', t => {
 	t.is(process.listenerCount('exit'), 0);
 
@@ -26,5 +31,13 @@ test('listener count', t => {
 
 	// Remove again
 	unsubscribe3();
+	t.is(process.listenerCount('exit'), 1);
+
+	// Add async style listener
+	const unsubscribe4 = exitHook(async () => {}, 100);
+	t.is(process.listenerCount('exit'), 1);
+
+	// Remove again
+	unsubscribe4();
 	t.is(process.listenerCount('exit'), 1);
 });
