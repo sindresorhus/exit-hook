@@ -1,17 +1,20 @@
 import process from 'node:process';
 
+const asyncCallbacks = new Set();
 const callbacks = new Set();
-const callbacksSync = new Set();
 
 let isCalled = false;
 let isRegistered = false;
 
-function exit(shouldManuallyExit, isSynchronous, signal) {
-	if (callbacks.size > 0 && isSynchronous) {
-		console.error('SYNCHRONOUS TERMINATION NOTICE:');
-		console.error('When explicitly exiting the process via process.exit, asynchronous');
-		console.error('tasks in your exitHooks will not run. Either remove these tasks,');
-		console.error('or use exitHook.exit() instead.');
+async function exit(shouldManuallyExit, isSynchronous, signal) {
+	if (asyncCallbacks.size > 0 && isSynchronous) {
+		console.error(`
+			SYNCHRONOUS TERMINATION NOTICE:
+			When explicitly exiting the process via process.exit or via a parent process,
+			asynchronous tasks in your exitHooks will not run. Either remove these tasks,
+			use exitHook.exit() instead of process.exit(), or ensure your parent process
+			sends a SIGINT to the process running this code.
+		`);
 	}
 
 	if (isCalled) {
@@ -26,7 +29,7 @@ function exit(shouldManuallyExit, isSynchronous, signal) {
 		}
 	};
 
-	for (const callback of callbacksSync) {
+	for (const callback of callbacks) {
 		callback();
 	}
 
@@ -36,30 +39,29 @@ function exit(shouldManuallyExit, isSynchronous, signal) {
 	}
 
 	const promises = [];
-	let maxWait = 0;
-	for (const [callback, wait] of callbacks) {
-		maxWait = Math.max(maxWait, wait);
+	let forceAfter = 0;
+	for (const [callback, wait] of asyncCallbacks) {
+		forceAfter = Math.max(forceAfter, wait);
 		promises.push(Promise.resolve(callback()));
 	}
 
 	// Force exit if we exceeded our maxWait value
 	const asyncTimer = setTimeout(() => {
 		done(true);
-	}, maxWait);
+	}, forceAfter);
 
-	Promise.all(promises).then(() => { // eslint-disable-line promise/prefer-await-to-then
-		clearTimeout(asyncTimer);
-		done();
-	});
+	await Promise.all(promises);
+	clearTimeout(asyncTimer);
+	done();
 }
 
-function exitHook(onExit, maxWait) {
-	const isSync = typeof maxWait === 'undefined';
-	const asyncCallbackConfig = [onExit, maxWait];
-	if (isSync) {
-		callbacksSync.add(onExit);
+function addHook(options) {
+	const {onExit, minWait, isSynchronous} = options;
+	const asyncCallbackConfig = [onExit, minWait];
+	if (isSynchronous) {
+		callbacks.add(onExit);
 	} else {
-		callbacks.add(asyncCallbackConfig);
+		asyncCallbacks.add(asyncCallbackConfig);
 	}
 
 	if (!isRegistered) {
@@ -87,13 +89,27 @@ function exitHook(onExit, maxWait) {
 	}
 
 	return () => {
-		if (isSync) {
-			callbacksSync.delete(onExit);
+		if (isSynchronous) {
+			callbacks.delete(onExit);
 		} else {
-			callbacks.delete(asyncCallbackConfig);
+			asyncCallbacks.delete(asyncCallbackConfig);
 		}
 	};
 }
+
+function exitHook(onExit) {
+	return addHook({
+		onExit,
+		minWait: null,
+		isSynchronous: true,
+	});
+}
+
+exitHook.async = hookOptions => addHook({
+	onExit: hookOptions.onExit,
+	minWait: hookOptions.minWait ?? 1000,
+	isSynchronous: false,
+});
 
 exitHook.exit = (signal = 0) => {
 	exit(true, false, -128 + signal);

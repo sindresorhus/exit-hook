@@ -26,16 +26,10 @@ exitHook(() => {
 	console.log('Exiting 2');
 });
 
-// Hooks can be asynchronous by telling exitHooks to wait
-exitHook(async () => {
-	console.log('Exiting 3, wait max 100ms');
-}, 100);
-
 throw new Error('🦄');
 
 //=> 'Exiting'
 //=> 'Exiting 2'
-//=> 'Exiting 3, wait max 100ms'
 ```
 
 Removing an exit hook:
@@ -50,7 +44,7 @@ unsubscribe();
 
 ## API
 
-### exitHook(onExit, maxWait?)
+### exitHook(onExit)
 
 Returns a function that removes the hook when called.
 
@@ -60,11 +54,30 @@ Type: `Function`
 
 The callback function to execute when the process exits.
 
-#### maxWait
+### exitHook.async(asyncHookOptions)
 
-Type: `Number` (optional)
+Returns a function that removes the hook when called. Please see [Async Notes](#async-notes) for considerations when using the asynchronous API.
 
-If provided, process exit will be delayed by at least this amount of time in ms to allow the `onExit` to complete.
+#### asyncHookOptions
+
+Type: `Object`
+
+A set of options for registering an asynchronous hook
+
+##### asyncHookOptions.onExit
+
+An asynchronous function that will be called on shutdown, returning a promise.
+
+##### asyncHookOptions.minWait
+
+The minimum amount of time to wait for this asynchronous hook to complete. Defaults to `1000`ms.
+
+# Async Notes
+
+`exitHook` comes with an asynchronous API via `exitHook.async` which under **specific conditions** will allow you to complete asynchronous tasks such as writing to a log file or completing pending IO operations. For reliable execution of your asynchronous hooks, you must be confident the following statements are true:
+
+- **Your process is terminated via an unhandled exception, `SIGINT`, or `SIGTERM` signal and does _not_ use `process.exit`.** node.js does not offer a asynchronous shutdown API [#1](https://github.com/nodejs/node/discussions/29480#discussioncomment-99213) [#2](https://github.com/nodejs/node/discussions/29480#discussioncomment-99217), as doing so could create shutdown handlers that delay the termination of the node.js process indefinitely.
+- **Your handlers are a "best effort" cleanup.** Because there are many ways a shutdown of a node process can be interrupted, and killed, asynchronous handlers should always adopt a "best effort" of cleanup. If an asynchronous handler does not run, it shouldn't leave your environment in a broken state.
 
 ---
 

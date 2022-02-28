@@ -14,13 +14,16 @@ const unsubscribe = exitHook(() => {
 
 unsubscribe();
 
-exitHook(async () => {
-	await new Promise((resolve, _reject) => {
-		setTimeout(() => {
-			resolve();
-		}, 100);
-	});
-	console.log('quux');
-}, 200);
+exitHook.async({
+	async onExit() {
+		await new Promise((resolve, _reject) => {
+			setTimeout(() => {
+				resolve();
+			}, 100);
+		});
+		console.log('quux');
+	},
+	minWait: 200,
+});
 
 exitHook.exit();

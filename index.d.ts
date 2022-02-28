@@ -1,54 +1,97 @@
-type ExitHook = {
+/**
+Run some code when the process exits.
+
+The `process.on('exit')` event doesn't catch all the ways a process can exit.
+
+This package is useful for cleaning up before exiting.
+
+@param onExit - The callback function to execute when the process exits.
+@returns A function that removes the hook when called.
+
+@example
+```
+import exitHook from 'exit-hook';
+
+exitHook(() => {
+	console.log('Exiting');
+});
+
+// You can add multiple hooks, even across files
+exitHook(() => {
+	console.log('Exiting 2');
+});
+
+throw new Error('🦄');
+
+//=> 'Exiting'
+//=> 'Exiting 2'
+
+// Removing an exit hook:
+const unsubscribe = exitHook(() => {});
+
+unsubscribe();
+```
+*/
+declare function exitHook(onExit: onExitCallback): unsubscribeCallback;
+
+declare namespace exitHook {
 	/**
 	Run some code when the process exits.
 
-	The `process.on('exit')` event doesn't catch all the ways a process can exit.
+	Please see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#async-notes
+	for important considerations before using `exitHook.async`.
 
-	This package is useful for cleaning up before exiting. To exit safely, call
-	`exitHook.exit()` instead of `process.exit()`.
+	By default, `onExit` works to shut down a node.js process in a synchronous
+	manner. If you have pending IO operations, it may be useful to wait for
+	those tasks to complete before performing the shutdown of the node.js
+	process.
+	*/
+	function async(options: asyncHookOptions): unsubscribeCallback;
 
-	@param onExit - The callback function to execute when the process exits. If asynchronous, maxWait is required.
-	@param maxWait - An optional duration in ms to wait for onExit to complete. Required for asynchronous exit handlers.
-	@returns A function that removes the hook when called.
+	/**
+	Exit the process and complete all asynchronous hooks.
+
+	Please see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#async-notes
+	for important considerations before using `exitHook.async`.
+
+	When using asynchronous hooks, you should use `exitHook.exit` instead of
+	calling `process.exit` directly. In node, `process.exit` does not wait for
+	asynchronous tasks to complete before termination.
+
+	@param signal - The exit code to use, identical to `process.exit`
+	@returns void
 
 	@example
 	```
 	import exitHook from 'exit-hook';
 
-	exitHook(() => {
-		console.log('Exiting');
+	exitHook.async({
+		async onExit() {
+			console.log('Exiting');
+		},
+		minWait: 100
 	});
 
-	// You can add multiple hooks, even across files
-	// asynchronous hooks should include an amount of time to wait for
-	// their completion
-	exitHook(async () => {
-		console.log('Exiting 2');
-	}, 100);
-
-	throw new Error('🦄');
-
-	//=> 'Exiting'
-	//=> 'Exiting 2'
-
-	// Removing an exit hook:
-	const unsubscribe = exitHook(() => {});
-
-	unsubscribe();
+	// instead of process.exit
+	exitHook.exit();
 	```
 	*/
-	(onExit: () => void | (() => Promise<void>), maxWait?: number): () => void;
+	function exit(signal: number): void;
+}
 
-	/**
-	Exit the process safely instead of calling process.exit()
+/** The onExit callback */
+type onExitCallback = () => void;
+/** The onExit callback */
+type onExitAsyncCallback = () => Promise<void>;
+/** An unsubscribe method that unregisters the hook */
+type unsubscribeCallback = () => void;
 
-	Because `process.exit()` skips asynchronous calls, it is recommended to call
-	`exitHook.exit()` instead. The exit hook will ensure asynchronous calls are
-	completed (within their maximum wait time) before exiting the process.
-	 */
-	exit: () => void;
+/** Options for asynchronous hooks */
+type asyncHookOptions = {
+	/** An asynchronous callback to run on exit. Returns an unsubscribe callback */
+	onExit: onExitAsyncCallback;
+	/** The minimum amount of time to wait for this process to terminate */
+	minWait?: number;
 };
 
-declare const exitHook: ExitHook;
-
-export = exitHook;
+export default exitHook;
