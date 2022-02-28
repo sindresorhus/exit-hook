@@ -74,10 +74,26 @@ The minimum amount of time to wait for this asynchronous hook to complete. Defau
 
 # Async Notes
 
-`exitHook` comes with an asynchronous API via `exitHook.async` which under **specific conditions** will allow you to complete asynchronous tasks such as writing to a log file or completing pending IO operations. For reliable execution of your asynchronous hooks, you must be confident the following statements are true:
+`exitHook` comes with an asynchronous API via `exitHook.async` which under **specific conditions** will allow you to complete asynchronous tasks such as writing to a log file or completing pending network operations. Because node.js does not offer an asynchronous shutdown API [#1](https://github.com/nodejs/node/discussions/29480#discussioncomment-99213) [#2](https://github.com/nodejs/node/discussions/29480#discussioncomment-99217), `exitHook.async` will make a "best effort" attempt to shut down the process and run your asynchronous tasks.
 
-- **Your process is terminated via an unhandled exception, `SIGINT`, or `SIGTERM` signal and does _not_ use `process.exit`.** node.js does not offer a asynchronous shutdown API [#1](https://github.com/nodejs/node/discussions/29480#discussioncomment-99213) [#2](https://github.com/nodejs/node/discussions/29480#discussioncomment-99217), as doing so could create shutdown handlers that delay the termination of the node.js process indefinitely.
-- **Your handlers are a "best effort" cleanup.** Because there are many ways a shutdown of a node process can be interrupted, and killed, asynchronous handlers should always adopt a "best effort" of cleanup. If an asynchronous handler does not run, it shouldn't leave your environment in a broken state.
+```
+SYNCHRONOUS TERMINATION NOTICE:
+When explicitly exiting the process via process.exit or via a parent process,
+asynchronous tasks in your exitHooks will not run. Either remove these tasks,
+use exitHook.exit() instead of process.exit(), or ensure your parent process
+sends a SIGINT to the process running this code.
+```
+
+The above error will be generated if your exit hooks are ran in a synchronous manner but there are asynchronous callbacks registered to the shutdown handler. To avoid this, ensure you're only exiting via `exitHook.exit(signal)` or that an upstream process manager is sending a `SIGINT` or `SIGTERM` signal to node.js.
+
+## Caveat: Avoid `process.exit()`
+The `process.exit()` function requires all exit handlers to be synchronous and will not run with `exitHook.async`. If you wish to manually exit the process and have asynchronous callbacks, please use `exitHook.exit(signal)` instead which will manually exit the process after all shutdown tasks are complete.
+
+## Caveat: Upstream Termination
+Process managers may not send a `SIGINT` or `SIGTERM` when ending your node.js process, which are the signals `exitHook` is designed to understand. If an unhandled signal forces a synchronous exit, your asynchronous exit hooks will not run. A console error will be generated to make you aware that a synchronous exit occured.
+
+## Caveat: Best Effort
+Asynchronous exit hooks should be a "best effort" attempt to clean up remaining tasks. Because tasks may not run under certain circumstances, your hooks should treat a clean exit as an ideal scenario.
 
 ---
 
