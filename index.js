@@ -8,13 +8,13 @@ let isRegistered = false;
 
 async function exit(shouldManuallyExit, isSynchronous, signal) {
 	if (asyncCallbacks.size > 0 && isSynchronous) {
-		console.error(`
-			SYNCHRONOUS TERMINATION NOTICE:
-			When explicitly exiting the process via process.exit or via a parent process,
-			asynchronous tasks in your exitHooks will not run. Either remove these tasks,
-			use exitHook.exit() instead of process.exit(), or ensure your parent process
-			sends a SIGINT to the process running this code.
-		`);
+		console.error([
+			'SYNCHRONOUS TERMINATION NOTICE:',
+			'When explicitly exiting the process via process.exit or via a parent process,',
+			'asynchronous tasks in your exitHooks will not run. Either remove these tasks,',
+			'use exitHook.exit() instead of process.exit(), or ensure your parent process',
+			'sends a SIGINT to the process running this code.',
+		].join(' '));
 	}
 
 	if (isCalled) {
@@ -56,8 +56,8 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 }
 
 function addHook(options) {
-	const {onExit, minWait, isSynchronous} = options;
-	const asyncCallbackConfig = [onExit, minWait];
+	const {onExit, minimumWait, isSynchronous} = options;
+	const asyncCallbackConfig = [onExit, minimumWait];
 	if (isSynchronous) {
 		callbacks.add(onExit);
 	} else {
@@ -100,19 +100,23 @@ function addHook(options) {
 function exitHook(onExit) {
 	return addHook({
 		onExit,
-		minWait: null,
+		minimumWait: null,
 		isSynchronous: true,
 	});
 }
 
-exitHook.async = hookOptions => addHook({
-	onExit: hookOptions.onExit,
-	minWait: hookOptions.minWait ?? 1000,
-	isSynchronous: false,
-});
+function asyncExitHook(onExit, hookOptions) {
+	return addHook({
+		onExit,
+		minimumWait: hookOptions.minimumWait ?? 100,
+		isSynchronous: false,
+	});
+}
 
-exitHook.exit = (signal = 0) => {
+function gracefulExit(signal = 0) {
 	exit(true, false, -128 + signal);
-};
+}
 
 export default exitHook;
+
+export {asyncExitHook, gracefulExit};

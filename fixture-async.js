@@ -1,4 +1,4 @@
-import exitHook from './index.js';
+import exitHook, {asyncExitHook, gracefulExit} from './index.js';
 
 exitHook(() => {
 	console.log('foo');
@@ -14,16 +14,18 @@ const unsubscribe = exitHook(() => {
 
 unsubscribe();
 
-exitHook.async({
-	async onExit() {
-		await new Promise((resolve, _reject) => {
+asyncExitHook(
+	async () => {
+		await new Promise(resolve => {
 			setTimeout(() => {
 				resolve();
 			}, 100);
 		});
 		console.log('quux');
 	},
-	minWait: 200,
-});
+	{
+		minimumWait: 200,
+	},
+);
 
-exitHook.exit();
+gracefulExit();

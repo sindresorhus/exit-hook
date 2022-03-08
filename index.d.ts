@@ -34,64 +34,79 @@ unsubscribe();
 */
 declare function exitHook(onExit: onExitCallback): unsubscribeCallback;
 
-declare namespace exitHook {
-	/**
-	Run some code when the process exits.
+/**
+Run code asynchronously when the process exits.
 
-	Please see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#async-notes
-	for important considerations before using `exitHook.async`.
+@see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#asynchronous-exit-notes
+@param options - The options, including a minimum wait time.
+@param onExit - The callback function to execute when the process exits.
+@returns A function that removes the hook when called.
 
-	By default, `onExit` works to shut down a node.js process in a synchronous
-	manner. If you have pending IO operations, it may be useful to wait for
-	those tasks to complete before performing the shutdown of the node.js
-	process.
-	*/
-	function async(options: asyncHookOptions): unsubscribeCallback;
+@example
+```
+import { asyncExitHook } from 'exit-hook';
 
-	/**
-	Exit the process and complete all asynchronous hooks.
+asyncExitHook({
+	// wait this long before exiting
+	minimumWait: 500
+}, () => {
+	console.log('Exiting');
+});
 
-	Please see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#async-notes
-	for important considerations before using `exitHook.async`.
+throw new Error('🦄');
 
-	When using asynchronous hooks, you should use `exitHook.exit` instead of
-	calling `process.exit` directly. In node, `process.exit` does not wait for
-	asynchronous tasks to complete before termination.
+//=> 'Exiting'
 
-	@param signal - The exit code to use, identical to `process.exit`
-	@returns void
+// Removing an exit hook:
+const unsubscribe = asyncExitHook({}, () => {});
 
-	@example
-	```
-	import exitHook from 'exit-hook';
+unsubscribe();
+```
+*/
+declare function asyncExitHook(onExit: onExitAsyncCallback, options?: asyncHookOptions): unsubscribeCallback;
 
-	exitHook.async({
-		async onExit() {
-			console.log('Exiting');
-		},
-		minWait: 100
-	});
+/**
+Exit the process and complete all asynchronous hooks.
 
-	// instead of process.exit
-	exitHook.exit();
-	```
-	*/
-	function exit(signal: number): void;
-}
+If using asyncExitHook, consider using `gracefulExit` instead of
+`process.exit()` to ensure all asynchronous tasks are given an opportunity to
+run.
+
+@param signal - The exit code to use, identical to `process.exit`
+@see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#asynchronous-exit-notes
+@returns void
+
+@example
+```
+import { asyncExitHook, gracefulExit } from 'exit-hook';
+
+asyncExitHook({
+	// wait this long before exiting
+	minimumWait: 500
+}, () => {
+	console.log('Exiting');
+});
+
+// instead of process.exit
+gracefulExit();
+```
+*/
+declare function gracefulExit(signal?: number): void;
 
 /** The onExit callback */
 type onExitCallback = () => void;
+
 /** The onExit callback */
 type onExitAsyncCallback = () => Promise<void>;
+
 /** An unsubscribe method that unregisters the hook */
 type unsubscribeCallback = () => void;
 
 /** Options for asynchronous hooks */
 type asyncHookOptions = {
-	/** An asynchronous callback to run on exit. Returns an unsubscribe callback */
-	onExit: onExitAsyncCallback;
-	/** The minimum amount of time to wait for this process to terminate */
-	minWait?: number;
+	/** The minimum amount of time to wait for this process to terminate. Defaults to 100ms */
+	minimumWait?: number;
 };
 
 export default exitHook;
+export {asyncExitHook, gracefulExit};

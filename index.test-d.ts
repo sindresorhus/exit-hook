@@ -1,12 +1,13 @@
 import {expectType} from 'tsd';
-import exitHook from './index.js';
+import exitHook, {asyncExitHook} from './index.js';
 
 const unsubscribe = exitHook(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
-const asyncUnsubscribe = exitHook.async({
-	async onExit() {}, // eslint-disable-line @typescript-eslint/no-empty-function
-	minWait: 100,
-});
+const asyncUnsubscribe = asyncExitHook(async () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
+	{
+		minimumWait: 100,
+	},
+);
 
 expectType<() => void>(unsubscribe);
 unsubscribe();

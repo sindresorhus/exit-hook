@@ -54,9 +54,43 @@ Type: `Function`
 
 The callback function to execute when the process exits.
 
-### exitHook.async(asyncHookOptions)
+### asyncExitHook(onExit, asyncHookOptions)
 
 Returns a function that removes the hook when called. Please see [Async Notes](#async-notes) for considerations when using the asynchronous API.
+
+```js
+import {asyncExitHook} from 'exit-hook';
+
+asyncExitHook(async () => {
+	console.log('Exiting');
+}, {
+	minimumWait: 300
+});
+
+throw new Error('🦄');
+
+//=> 'Exiting'
+```
+
+Removing an asynchronous exit hook:
+
+```js
+import {asyncExitHook} from 'exit-hook';
+
+const unsubscribe = asyncExitHook(async () => {
+	console.log('Exiting');
+}, {
+	minimumWait: 300
+});
+
+unsubscribe();
+```
+
+#### onExit
+
+Type: `Function` returns `Promise`
+
+The callback function to execute when the process exits.
 
 #### asyncHookOptions
 
@@ -64,36 +98,19 @@ Type: `Object`
 
 A set of options for registering an asynchronous hook
 
-##### asyncHookOptions.onExit
-
-An asynchronous function that will be called on shutdown, returning a promise.
-
 ##### asyncHookOptions.minWait
 
 The minimum amount of time to wait for this asynchronous hook to complete. Defaults to `1000`ms.
 
-# Async Notes
+# Asynchronous Exit Notes
 
-`exitHook` comes with an asynchronous API via `exitHook.async` which under **specific conditions** will allow you to complete asynchronous tasks such as writing to a log file or completing pending network operations. Because node.js does not offer an asynchronous shutdown API [#1](https://github.com/nodejs/node/discussions/29480#discussioncomment-99213) [#2](https://github.com/nodejs/node/discussions/29480#discussioncomment-99217), `exitHook.async` will make a "best effort" attempt to shut down the process and run your asynchronous tasks.
+**tl;dr** If you have 100% control over how your process terminates, then you can swap `exitHook` and `process.exit` for `asyncExitHook` and `gracefulExit` respectively. Otherwise, keep reading to understand important tradeoffs if you're using `asyncExitHook`.
 
-```
-SYNCHRONOUS TERMINATION NOTICE:
-When explicitly exiting the process via process.exit or via a parent process,
-asynchronous tasks in your exitHooks will not run. Either remove these tasks,
-use exitHook.exit() instead of process.exit(), or ensure your parent process
-sends a SIGINT to the process running this code.
-```
+node.js does not offer an asynchronous shutdown API by default [#1](https://github.com/nodejs/node/discussions/29480#discussioncomment-99213) [#2](https://github.com/nodejs/node/discussions/29480#discussioncomment-99217), so `asyncExitHook` and `gracefulExit` will make a "best effort" attempt to shut down the process and run your asynchronous tasks.
 
-The above error will be generated if your exit hooks are ran in a synchronous manner but there are asynchronous callbacks registered to the shutdown handler. To avoid this, ensure you're only exiting via `exitHook.exit(signal)` or that an upstream process manager is sending a `SIGINT` or `SIGTERM` signal to node.js.
+If you have asynchronous hooks registered and your node.js process is terminated in a synchronous manner, a `SYNCHRONOUS TERMINATION NOTICE` error will be logged to the console. To avoid this, ensure you're only exiting via `gracefulExit` or that an upstream process manager is sending a `SIGINT` or `SIGTERM` signal to node.js.
 
-## Caveat: Avoid `process.exit()`
-The `process.exit()` function requires all exit handlers to be synchronous and will not run with `exitHook.async`. If you wish to manually exit the process and have asynchronous callbacks, please use `exitHook.exit(signal)` instead which will manually exit the process after all shutdown tasks are complete.
-
-## Caveat: Upstream Termination
-Process managers may not send a `SIGINT` or `SIGTERM` when ending your node.js process, which are the signals `exitHook` is designed to understand. If an unhandled signal forces a synchronous exit, your asynchronous exit hooks will not run. A console error will be generated to make you aware that a synchronous exit occured.
-
-## Caveat: Best Effort
-Asynchronous exit hooks should be a "best effort" attempt to clean up remaining tasks. Because tasks may not run under certain circumstances, your hooks should treat a clean exit as an ideal scenario.
+Asynchronous hooks should make a "best effort" to perform their tasks within the `minimumWait` option, but also be written to assume they may not complete their tasks before termination.
 
 ---
 
