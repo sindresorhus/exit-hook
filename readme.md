@@ -100,7 +100,7 @@ A set of options for registering an asynchronous hook
 
 ##### asyncHookOptions.minWait
 
-The minimum amount of time to wait for this asynchronous hook to complete. Defaults to `1000`ms.
+The minimum amount of time to wait for this asynchronous hook to complete.
 
 # Asynchronous Exit Notes
 

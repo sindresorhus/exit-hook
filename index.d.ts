@@ -63,7 +63,7 @@ const unsubscribe = asyncExitHook({}, () => {});
 unsubscribe();
 ```
 */
-declare function asyncExitHook(onExit: onExitAsyncCallback, options?: asyncHookOptions): unsubscribeCallback;
+declare function asyncExitHook(onExit: onExitAsyncCallback, options: asyncHookOptions): unsubscribeCallback;
 
 /**
 Exit the process and complete all asynchronous hooks.
@@ -104,8 +104,8 @@ type unsubscribeCallback = () => void;
 
 /** Options for asynchronous hooks */
 type asyncHookOptions = {
-	/** The minimum amount of time to wait for this process to terminate. Defaults to 100ms */
-	minimumWait?: number;
+	/** The minimum amount of time to wait for this process to terminate */
+	minimumWait: number;
 };
 
 export default exitHook;

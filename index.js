@@ -106,9 +106,13 @@ function exitHook(onExit) {
 }
 
 function asyncExitHook(onExit, hookOptions) {
+	if (typeof hookOptions?.minimumWait !== 'number') {
+		throw new TypeError('options.minimumWait must be set to a numeric value');
+	}
+
 	return addHook({
 		onExit,
-		minimumWait: hookOptions.minimumWait ?? 100,
+		minimumWait: hookOptions.minimumWait,
 		isSynchronous: false,
 	});
 }
