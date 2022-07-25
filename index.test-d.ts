@@ -4,7 +4,7 @@ import exitHook, {asyncExitHook} from './index.js';
 const unsubscribe = exitHook(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
 const asyncUnsubscribe = asyncExitHook(async () => {}, // eslint-disable-line @typescript-eslint/no-empty-function
-	100,
+	{minimumWait: 300},
 );
 
 expectType<() => void>(unsubscribe);

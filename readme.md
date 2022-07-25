@@ -79,7 +79,9 @@ import {asyncExitHook} from 'exit-hook';
 
 const unsubscribe = asyncExitHook(async () => {
 	console.log('Exiting');
-}, 300);
+}, {
+	minimumWait: 300
+});
 
 unsubscribe();
 ```
@@ -90,7 +92,9 @@ Type: `Function` returns `Promise`
 
 The callback function to execute when the process exits via `gracefulExit`, and will be wrapped in `Promise.resolve`.
 
-#### minimumWait
+#### options
+
+##### minimumWait
 
 Type: `Number`
 

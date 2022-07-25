@@ -39,7 +39,6 @@ Run code asynchronously when the process exits.
 
 @see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#asynchronous-exit-notes
 @param onExit - The callback function to execute when the process exits via `gracefulExit`, and will be wrapped in `Promise.resolve`.
-@param minimumWait - The amount of time in ms that `onExit` is expected to take.
 @returns A function that removes the hook when called.
 
 @example
@@ -48,19 +47,21 @@ import {asyncExitHook} from 'exit-hook';
 
 asyncExitHook(() => {
 	console.log('Exiting');
-}, 500);
+}, {
+	minimumWait: 500
+});
 
 throw new Error('🦄');
 
 //=> 'Exiting'
 
 // Removing an exit hook:
-const unsubscribe = asyncExitHook({}, () => {});
+const unsubscribe = asyncExitHook(() => {}, {});
 
 unsubscribe();
 ```
 */
-export function asyncExitHook(onExit: () => (void | Promise<void>), minimumWait: number): () => void;
+export function asyncExitHook(onExit: () => (void | Promise<void>), options: Options): () => void;
 
 /**
 Exit the process and makes a best-effort to complete all asynchronous hooks.
@@ -83,3 +84,10 @@ gracefulExit();
 ```
 */
 export function gracefulExit(signal?: number): void;
+
+export interface Options {
+	/**
+	The amount of time in ms that the `onExit` function is expected to take.
+	*/
+	minimumWait: number;
+}

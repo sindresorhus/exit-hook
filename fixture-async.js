@@ -23,7 +23,9 @@ asyncExitHook(
 		});
 		console.log('quux');
 	},
-	200,
+	{
+		minimumWait: 200,
+	},
 );
 
 gracefulExit();

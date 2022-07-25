@@ -105,14 +105,14 @@ function exitHook(onExit) {
 	});
 }
 
-function asyncExitHook(onExit, minimumWait) {
-	if (typeof minimumWait !== 'number') {
-		throw new TypeError('minimumWait must be set to a numeric value');
+function asyncExitHook(onExit, options) {
+	if (typeof options?.minimumWait !== 'number' || options.minimumWait <= 0) {
+		throw new TypeError('minimumWait must be set to a positive numeric value');
 	}
 
 	return addHook({
 		onExit,
-		minimumWait,
+		minimumWait: options.minimumWait,
 		isSynchronous: false,
 	});
 }
