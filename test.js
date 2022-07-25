@@ -34,10 +34,12 @@ test('listener count', t => {
 	t.is(process.listenerCount('exit'), 1);
 
 	// Add async style listener
-	const unsubscribe4 = exitHook({
-		async onExit() {},
-		maxWait: 100,
-	});
+	const unsubscribe4 = exitHook(
+		async () => {},
+		{
+			maxWait: 100,
+		},
+	);
 	t.is(process.listenerCount('exit'), 1);
 
 	// Remove again
