@@ -12,7 +12,7 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 			'SYNCHRONOUS TERMINATION NOTICE:',
 			'When explicitly exiting the process via process.exit or via a parent process,',
 			'asynchronous tasks in your exitHooks will not run. Either remove these tasks,',
-			'use exitHook.exit() instead of process.exit(), or ensure your parent process',
+			'use gracefulExit() instead of process.exit(), or ensure your parent process',
 			'sends a SIGINT to the process running this code.',
 		].join(' '));
 	}
@@ -105,14 +105,14 @@ function exitHook(onExit) {
 	});
 }
 
-function asyncExitHook(onExit, hookOptions) {
-	if (typeof hookOptions?.minimumWait !== 'number') {
-		throw new TypeError('options.minimumWait must be set to a numeric value');
+function asyncExitHook(onExit, minimumWait) {
+	if (typeof minimumWait !== 'number') {
+		throw new TypeError('minimumWait must be set to a numeric value');
 	}
 
 	return addHook({
 		onExit,
-		minimumWait: hookOptions.minimumWait,
+		minimumWait,
 		isSynchronous: false,
 	});
 }
