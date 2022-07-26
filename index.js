@@ -45,7 +45,7 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 		promises.push(Promise.resolve(callback()));
 	}
 
-	// Force exit if we exceeded our maxWait value
+	// Force exit if we exceeded our wait value
 	const asyncTimer = setTimeout(() => {
 		done(true);
 	}, forceAfter);
