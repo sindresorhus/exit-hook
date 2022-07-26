@@ -98,6 +98,10 @@ function addHook(options) {
 }
 
 function exitHook(onExit) {
+	if (typeof onExit !== 'function') {
+		throw new TypeError('onExit must be a function');
+	}
+
 	return addHook({
 		onExit,
 		minimumWait: null,
@@ -106,6 +110,10 @@ function exitHook(onExit) {
 }
 
 function asyncExitHook(onExit, options) {
+	if (typeof onExit !== 'function') {
+		throw new TypeError('onExit must be a function');
+	}
+
 	if (typeof options?.minimumWait !== 'number' || options.minimumWait <= 0) {
 		throw new TypeError('minimumWait must be set to a positive numeric value');
 	}

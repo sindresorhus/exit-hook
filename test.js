@@ -1,7 +1,7 @@
 import process from 'node:process';
 import test from 'ava';
 import execa from 'execa';
-import exitHook from './index.js';
+import exitHook, {asyncExitHook} from './index.js';
 
 test('main', async t => {
 	const {stdout} = await execa(process.execPath, ['fixture.js']);
@@ -34,10 +34,10 @@ test('listener count', t => {
 	t.is(process.listenerCount('exit'), 1);
 
 	// Add async style listener
-	const unsubscribe4 = exitHook(
+	const unsubscribe4 = asyncExitHook(
 		async () => {},
 		{
-			maxWait: 100,
+			minimumWait: 100,
 		},
 	);
 	t.is(process.listenerCount('exit'), 1);
@@ -45,4 +45,17 @@ test('listener count', t => {
 	// Remove again
 	unsubscribe4();
 	t.is(process.listenerCount('exit'), 1);
+});
+
+test('type enforcing', t => {
+	// Non-function passed to exitHook
+	t.throws(() => exitHook(null), {instanceOf: TypeError});
+
+	// Non-function passed to asyncExitHook
+	t.throws(() => asyncExitHook(null, {
+		minimumWait: 100,
+	}), {instanceOf: TypeError});
+
+	// Non-numeric passed to Options.minimumWait
+	t.throws(() => asyncExitHook(async () => Promise.resolve(true), {}));
 });
