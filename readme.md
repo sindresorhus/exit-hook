@@ -121,7 +121,7 @@ The exit code to use, identical to `process.exit`
 
 **tl;dr** If you have 100% control over how your process terminates, then you can swap `exitHook` and `process.exit` for `asyncExitHook` and `gracefulExit` respectively. Otherwise, keep reading to understand important tradeoffs if you're using `asyncExitHook`.
 
-node.js does not offer an asynchronous shutdown API by default [#1](https://github.com/nodejs/node/discussions/29480#discussioncomment-99213) [#2](https://github.com/nodejs/node/discussions/29480#discussioncomment-99217), so `asyncExitHook` and `gracefulExit` will make a "best effort" attempt to shut down the process and run your asynchronous tasks.
+Node.js does not offer an asynchronous shutdown API by default [#1](https://github.com/nodejs/node/discussions/29480#discussioncomment-99213) [#2](https://github.com/nodejs/node/discussions/29480#discussioncomment-99217), so `asyncExitHook` and `gracefulExit` will make a "best effort" attempt to shut down the process and run your asynchronous tasks.
 
 If you have asynchronous hooks registered and your node.js process is terminated in a synchronous manner, a `SYNCHRONOUS TERMINATION NOTICE` error will be logged to the console. To avoid this, ensure you're only exiting via `gracefulExit` or that an upstream process manager is sending a `SIGINT` or `SIGTERM` signal to node.js.
 
