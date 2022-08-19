@@ -98,11 +98,13 @@ The callback function to execute when the process exits via `gracefulExit`, and 
 
 Type: `Number`
 
-The amount of time to wait for this asynchronous hook to complete.
+The amount of time in milliseconds that the `onExit` function is expected to take.
 
 ### gracefulExit(signal?: number): void
 
 Exit the process and make a best-effort to complete all asynchronous hooks.
+
+If you are using `asyncExitHook`, consider using `gracefulExit()` instead of `process.exit()` to ensure all asynchronous tasks are given an opportunity to run.
 
 ```js
 import {gracefulExit} from 'exit-hook';
@@ -115,7 +117,7 @@ gracefulExit();
 Type: `number`\
 Default: `0`
 
-The exit code to use, identical to `process.exit`
+The exit code to use. Same as the argument to `process.exit()`.
 
 ## Asynchronous Exit Notes
 
