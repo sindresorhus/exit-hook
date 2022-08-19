@@ -50,7 +50,7 @@ Register a function to run during `process.exit`. Returns a function that remove
 
 #### onExit
 
-Type: `Function`
+Type: `function(): void`
 
 Describes a callback to run on `process.exit`.
 
@@ -88,7 +88,7 @@ unsubscribe();
 
 #### onExit
 
-Type: `Function` returns `Promise`
+Type: `function(): void | Promise<void>`
 
 The callback function to execute when the process exits via `gracefulExit`, and will be wrapped in `Promise.resolve`.
 
@@ -96,7 +96,7 @@ The callback function to execute when the process exits via `gracefulExit`, and 
 
 ##### minimumWait
 
-Type: `Number`
+Type: `number`
 
 The amount of time in milliseconds that the `onExit` function is expected to take.
 
