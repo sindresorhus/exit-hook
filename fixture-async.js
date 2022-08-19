@@ -21,6 +21,7 @@ asyncExitHook(
 				resolve();
 			}, 100);
 		});
+
 		console.log('quux');
 	},
 	{
