@@ -58,6 +58,7 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 function addHook(options) {
 	const {onExit, minimumWait, isSynchronous} = options;
 	const asyncCallbackConfig = [onExit, minimumWait];
+
 	if (isSynchronous) {
 		callbacks.add(onExit);
 	} else {
@@ -104,7 +105,6 @@ function exitHook(onExit) {
 
 	return addHook({
 		onExit,
-		minimumWait: null,
 		isSynchronous: true,
 	});
 }
