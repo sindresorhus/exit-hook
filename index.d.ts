@@ -64,11 +64,11 @@ unsubscribe();
 export function asyncExitHook(onExit: () => (void | Promise<void>), options: Options): () => void;
 
 /**
-Exit the process and makes a best-effort to complete all asynchronous hooks.
+Exit the process and make a best-effort to complete all asynchronous hooks.
 
-If using asyncExitHook, consider using `gracefulExit` instead of `process.exit()` to ensure all asynchronous tasks are given an opportunity to run.
+If you are using `asyncExitHook`, consider using `gracefulExit()` instead of `process.exit()` to ensure all asynchronous tasks are given an opportunity to run.
 
-@param signal - The exit code to use, identical to `process.exit`
+@param signal - The exit code to use. Same as the argument to `process.exit()`.
 @see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#asynchronous-exit-notes
 
 @example
@@ -79,7 +79,7 @@ asyncExitHook(() => {
 	console.log('Exiting');
 }, 500);
 
-// instead of process.exit
+// Instead of `process.exit()`
 gracefulExit();
 ```
 */
@@ -87,7 +87,7 @@ export function gracefulExit(signal?: number): void;
 
 export interface Options {
 	/**
-	The amount of time in ms that the `onExit` function is expected to take.
+	The amount of time in milliseconds that the `onExit` function is expected to take.
 	*/
 	minimumWait: number;
 }
