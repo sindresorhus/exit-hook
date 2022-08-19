@@ -109,7 +109,7 @@ function exitHook(onExit) {
 	});
 }
 
-function asyncExitHook(onExit, options) {
+export function asyncExitHook(onExit, options) {
 	if (typeof onExit !== 'function') {
 		throw new TypeError('onExit must be a function');
 	}
@@ -125,10 +125,8 @@ function asyncExitHook(onExit, options) {
 	});
 }
 
-function gracefulExit(signal = 0) {
+export function gracefulExit(signal = 0) {
 	exit(true, false, -128 + signal);
 }
 
 export default exitHook;
-
-export {asyncExitHook, gracefulExit};
