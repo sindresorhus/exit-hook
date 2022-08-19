@@ -117,7 +117,7 @@ Default: `0`
 
 The exit code to use, identical to `process.exit`
 
-# Asynchronous Exit Notes
+## Asynchronous Exit Notes
 
 **tl;dr** If you have 100% control over how your process terminates, then you can swap `exitHook` and `process.exit` for `asyncExitHook` and `gracefulExit` respectively. Otherwise, keep reading to understand important tradeoffs if you're using `asyncExitHook`.
 
