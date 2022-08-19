@@ -112,7 +112,8 @@ gracefulExit();
 
 #### signal
 
-Type: `Number` default `0`
+Type: `number`\
+Default: `0`
 
 The exit code to use, identical to `process.exit`
 
