@@ -102,7 +102,7 @@ The amount of time to wait for this asynchronous hook to complete.
 
 ### gracefulExit(signal?: number): void
 
-Exit the process and makes a best-effort to complete all asynchronous hooks.
+Exit the process and make a best-effort to complete all asynchronous hooks.
 
 ```js
 import {gracefulExit} from 'exit-hook';
