@@ -52,7 +52,7 @@ Register a function to run during `process.exit`. Returns a function that remove
 
 Type: `function(): void`
 
-Describes a callback to run on `process.exit`.
+The callback function to execute when the process exits.
 
 ### asyncExitHook(onExit, minimumWait)
 
