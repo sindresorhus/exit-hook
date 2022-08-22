@@ -8,8 +8,8 @@ This package is useful for cleaning up before exiting.
 
 ## Install
 
-```
-$ npm install exit-hook
+```sh
+npm install exit-hook
 ```
 
 ## Usage
@@ -46,7 +46,9 @@ unsubscribe();
 
 ### exitHook(onExit)
 
-Register a function to run during `process.exit`. Returns a function that removes the hook when called.
+Register a function to run during `process.exit`.
+
+Returns a function that removes the hook when called.
 
 #### onExit
 
@@ -56,9 +58,11 @@ The callback function to execute when the process exits.
 
 ### asyncExitHook(onExit, minimumWait)
 
-Register a function to run during `gracefulExit`. Returns a function that removes the hook when called.
+Register a function to run during `gracefulExit`.
 
-Please see [Async Notes](#async-notes) for considerations when using the asynchronous API.
+Returns a function that removes the hook when called.
+
+Please see [Async Notes](#asynchronous-exit-notes) for considerations when using the asynchronous API.
 
 ```js
 import {asyncExitHook} from 'exit-hook';
@@ -125,18 +129,6 @@ The exit code to use. Same as the argument to `process.exit()`.
 
 Node.js does not offer an asynchronous shutdown API by default [#1](https://github.com/nodejs/node/discussions/29480#discussioncomment-99213) [#2](https://github.com/nodejs/node/discussions/29480#discussioncomment-99217), so `asyncExitHook` and `gracefulExit` will make a "best effort" attempt to shut down the process and run your asynchronous tasks.
 
-If you have asynchronous hooks registered and your node.js process is terminated in a synchronous manner, a `SYNCHRONOUS TERMINATION NOTICE` error will be logged to the console. To avoid this, ensure you're only exiting via `gracefulExit` or that an upstream process manager is sending a `SIGINT` or `SIGTERM` signal to node.js.
+If you have asynchronous hooks registered and your Node.js process is terminated in a synchronous manner, a `SYNCHRONOUS TERMINATION NOTICE` error will be logged to the console. To avoid this, ensure you're only exiting via `gracefulExit` or that an upstream process manager is sending a `SIGINT` or `SIGTERM` signal to Node.js.
 
 Asynchronous hooks should make a "best effort" to perform their tasks within the `minimumWait` time, but also be written to assume they may not complete their tasks before termination.
-
----
-
-<div align="center">
-	<b>
-		<a href="https://tidelift.com/subscription/pkg/npm-exit-hook?utm_source=npm-exit-hook&utm_medium=referral&utm_campaign=readme">Get professional support for this package with a Tidelift subscription</a>
-	</b>
-	<br>
-	<sub>
-		Tidelift helps make open source sustainable for maintainers while giving companies<br>assurances about security, maintenance, and licensing for their dependencies.
-	</sub>
-</div>

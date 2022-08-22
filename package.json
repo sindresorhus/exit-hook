@@ -36,7 +36,9 @@
 		"kill",
 		"stop",
 		"event",
-		"signal"
+		"signal",
+		"async",
+		"asynchronous"
 	],
 	"devDependencies": {
 		"ava": "^3.15.0",

@@ -48,14 +48,22 @@ test('listener count', t => {
 });
 
 test('type enforcing', t => {
-	// Non-function passed to exitHook
-	t.throws(() => exitHook(null), {instanceOf: TypeError});
+	// Non-function passed to `exitHook`.
+	t.throws(() => {
+		exitHook(null);
+	}, {instanceOf: TypeError});
 
-	// Non-function passed to asyncExitHook
-	t.throws(() => asyncExitHook(null, {
-		minimumWait: 100,
-	}), {instanceOf: TypeError});
+	// Non-function passed to `asyncExitHook`.
+	t.throws(() => {
+		asyncExitHook(null, {
+			minimumWait: 100,
+		});
+	}, {
+		instanceOf: TypeError,
+	});
 
-	// Non-numeric passed to Options.minimumWait
-	t.throws(() => asyncExitHook(async () => Promise.resolve(true), {}));
+	// Non-numeric passed to `minimumWait` option.
+	t.throws(() => {
+		asyncExitHook(async () => true, {});
+	});
 });
