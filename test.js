@@ -4,13 +4,25 @@ import execa from 'execa';
 import exitHook, {asyncExitHook} from './index.js';
 
 test('main', async t => {
-	const {stdout} = await execa(process.execPath, ['fixture.js']);
+	const {stdout, stderr} = await execa(process.execPath, ['fixture.js']);
 	t.is(stdout, 'foo\nbar');
+	t.is(stderr, '');
 });
 
 test('main-async', async t => {
-	const {stdout} = await execa(process.execPath, ['fixture-async.js']);
+	const {stdout, stderr} = await execa(process.execPath, ['fixture-async.js']);
 	t.is(stdout, 'foo\nbar\nquux');
+	t.is(stderr, '');
+});
+
+test('main-async-notice', async t => {
+	const {stdout, stderr} = await execa(process.execPath, ['fixture-async.js'], {
+		env: {
+			EXIT_HOOK_SYNC: '1',
+		},
+	});
+	t.is(stdout, 'foo\nbar');
+	t.regex(stderr, /SYNCHRONOUS TERMINATION NOTICE/);
 });
 
 test('listener count', t => {

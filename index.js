@@ -7,6 +7,12 @@ let isCalled = false;
 let isRegistered = false;
 
 async function exit(shouldManuallyExit, isSynchronous, signal) {
+	if (isCalled) {
+		return;
+	}
+
+	isCalled = true;
+
 	if (asyncCallbacks.size > 0 && isSynchronous) {
 		console.error([
 			'SYNCHRONOUS TERMINATION NOTICE:',
@@ -16,12 +22,6 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 			'sends a SIGINT to the process running this code.',
 		].join(' '));
 	}
-
-	if (isCalled) {
-		return;
-	}
-
-	isCalled = true;
 
 	const done = (force = false) => {
 		if (force === true || shouldManuallyExit === true) {
