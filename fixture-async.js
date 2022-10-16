@@ -1,3 +1,4 @@
+import process from 'node:process';
 import exitHook, {asyncExitHook, gracefulExit} from './index.js';
 
 exitHook(() => {
@@ -28,5 +29,9 @@ asyncExitHook(
 		minimumWait: 200,
 	},
 );
+
+if (process.env.EXIT_HOOK_SYNC === '1') {
+	process.exit(0); // eslint-disable-line unicorn/no-process-exit
+}
 
 gracefulExit();
