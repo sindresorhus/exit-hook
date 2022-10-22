@@ -69,7 +69,7 @@ function addHook(options) {
 		isRegistered = true;
 
 		// Exit cases that support asynchronous handling
-		process.once('beforeExit', exit.bind(undefined, true, false, 0));
+		process.once('beforeExit', exit.bind(undefined, true, false, -128));
 		process.once('SIGINT', exit.bind(undefined, true, false, 2));
 		process.once('SIGTERM', exit.bind(undefined, true, false, 15));
 
