@@ -100,7 +100,7 @@ for (const [signal, exitCode] of signalTests) {
 
 		setTimeout(() => {
 			subprocess.kill(signal);
-		}, 100);
+		}, 1000);
 
 		try {
 			await subprocess;
