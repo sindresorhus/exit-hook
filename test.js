@@ -88,3 +88,26 @@ test('type enforcing', t => {
 		asyncExitHook(async () => true, {});
 	});
 });
+
+const signalTests = [
+	['SIGINT', 130],
+	['SIGTERM', 143],
+];
+
+for (const [signal, exitCode] of signalTests) {
+	test(signal, async t => {
+		const subprocess = execa(process.execPath, ['./fixtures/signal.js']);
+
+		setTimeout(() => {
+			subprocess.kill(signal);
+		}, 100);
+
+		try {
+			await subprocess;
+		} catch (error) {
+			t.is(error.exitCode, exitCode);
+			t.is(error.stderr, '');
+			t.is(error.stdout, `${exitCode}\n${exitCode}`);
+		}
+	});
+}

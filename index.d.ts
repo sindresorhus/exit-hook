@@ -1,19 +1,24 @@
 /**
+@callback onExit
+@param {number} signal - The exit code.
+*/
+
+/**
 Run some code when the process exits.
 
 The `process.on('exit')` event doesn't catch all the ways a process can exit.
 
 This is useful for cleaning synchronously before exiting.
 
-@param onExit - The callback function to execute when the process exits.
+@param {onExit} onExit - The callback function to execute when the process exits.
 @returns A function that removes the hook when called.
 
 @example
 ```
 import exitHook from 'exit-hook';
 
-exitHook(() => {
-	console.log('Exiting');
+exitHook(signal => {
+	console.log(`Exiting with signal: ${signal}`);
 });
 
 // You can add multiple hooks, even across files
@@ -32,13 +37,13 @@ const unsubscribe = exitHook(() => {});
 unsubscribe();
 ```
 */
-export default function exitHook(onExit: () => void): () => void;
+export default function exitHook(onExit: (signal: number) => void): () => void;
 
 /**
 Run code asynchronously when the process exits.
 
 @see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#asynchronous-exit-notes
-@param onExit - The callback function to execute when the process exits via `gracefulExit`, and will be wrapped in `Promise.resolve`.
+@param {onExit} onExit - The callback function to execute when the process exits via `gracefulExit`, and will be wrapped in `Promise.resolve`.
 @returns A function that removes the hook when called.
 
 @example
@@ -61,7 +66,7 @@ const unsubscribe = asyncExitHook(() => {}, {});
 unsubscribe();
 ```
 */
-export function asyncExitHook(onExit: () => (void | Promise<void>), options: Options): () => void;
+export function asyncExitHook(onExit: (signal: number) => (void | Promise<void>), options: Options): () => void;
 
 /**
 Exit the process and make a best-effort to complete all asynchronous hooks.
