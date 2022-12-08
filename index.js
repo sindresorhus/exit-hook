@@ -109,12 +109,12 @@ export default function exitHook(onExit) {
 	});
 }
 
-export function asyncExitHook(onExit, options) {
+export function asyncExitHook(onExit, options = {}) {
 	if (typeof onExit !== 'function') {
 		throw new TypeError('onExit must be a function');
 	}
 
-	if (typeof options?.minimumWait !== 'number' || options.minimumWait <= 0) {
+	if (!(typeof options.minimumWait === 'number' && options.minimumWait > 0)) {
 		throw new TypeError('minimumWait must be set to a positive numeric value');
 	}
 
