@@ -56,7 +56,7 @@ throw new Error('🦄');
 //=> 'Exiting'
 
 // Removing an exit hook:
-const unsubscribe = asyncExitHook(() => {}, {});
+const unsubscribe = asyncExitHook(() => {}, { minimumWait: 500 });
 
 unsubscribe();
 ```
@@ -77,7 +77,9 @@ import {asyncExitHook, gracefulExit} from 'exit-hook';
 
 asyncExitHook(() => {
 	console.log('Exiting');
-}, 500);
+}, {
+	minimumWait: 500
+});
 
 // Instead of `process.exit()`
 gracefulExit();

@@ -56,7 +56,7 @@ Type: `function(): void`
 
 The callback function to execute when the process exits.
 
-### asyncExitHook(onExit, minimumWait)
+### asyncExitHook(onExit, options)
 
 Register a function to run during `gracefulExit`.
 
@@ -64,12 +64,28 @@ Returns a function that removes the hook when called.
 
 Please see [Async Notes](#asynchronous-exit-notes) for considerations when using the asynchronous API.
 
+#### onExit
+
+Type: `function(): void | Promise<void>`
+
+The callback function to execute when the process exits via `gracefulExit`, and will be wrapped in `Promise.resolve`.
+
+#### options
+
+##### minimumWait
+
+Type: `number`
+
+The amount of time in milliseconds that the `onExit` function is expected to take.
+
 ```js
 import {asyncExitHook} from 'exit-hook';
 
 asyncExitHook(async () => {
 	console.log('Exiting');
-}, 300);
+}, {
+	minimumWait: 300
+});
 
 throw new Error('🦄');
 
@@ -89,20 +105,6 @@ const unsubscribe = asyncExitHook(async () => {
 
 unsubscribe();
 ```
-
-#### onExit
-
-Type: `function(): void | Promise<void>`
-
-The callback function to execute when the process exits via `gracefulExit`, and will be wrapped in `Promise.resolve`.
-
-#### options
-
-##### minimumWait
-
-Type: `number`
-
-The amount of time in milliseconds that the `onExit` function is expected to take.
 
 ### gracefulExit(signal?: number): void
 
