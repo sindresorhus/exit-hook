@@ -1,32 +1,33 @@
+/* eslint-disable @typescript-eslint/no-empty-function */
 import process from 'node:process';
 import test from 'ava';
 import execa from 'execa';
-import exitHook, {asyncExitHook} from './index.js';
+import exitHook, {asyncExitHook} from '../source/index.js';
 
 test('main', async t => {
-	const {stdout, stderr, exitCode} = await execa(process.execPath, ['./fixtures/sync.js']);
+	const {stdout, stderr, exitCode} = await execa(process.execPath, ['./test/fixtures/sync.js']);
 	t.is(stdout, 'foo\nbar');
 	t.is(stderr, '');
 	t.is(exitCode, 0);
 });
 
 test('main-empty', async t => {
-	const {stderr, exitCode} = await execa(process.execPath, ['./fixtures/empty.js']);
+	const {stderr, exitCode} = await execa(process.execPath, ['./test/fixtures/empty.js']);
 	t.is(stderr, '');
 	t.is(exitCode, 0);
 });
 
 test('main-async', async t => {
-	const {stdout, stderr, exitCode} = await execa(process.execPath, ['./fixtures/async.js']);
+	const {stdout, stderr, exitCode} = await execa(process.execPath, ['./test/fixtures/async.js']);
 	t.is(stdout, 'foo\nbar\nquux');
 	t.is(stderr, '');
 	t.is(exitCode, 0);
 });
 
 test('main-async-notice', async t => {
-	const {stdout, stderr, exitCode} = await execa(process.execPath, ['./fixtures/async.js'], {
+	const {stdout, stderr, exitCode} = await execa(process.execPath, ['./test/fixtures/async.js'], {
 		env: {
-			EXIT_HOOK_SYNC: '1',
+			EXIT_HOOK_SYNC: '1', // eslint-disable-line @typescript-eslint/naming-convention
 		},
 	});
 	t.is(stdout, 'foo\nbar');
@@ -71,11 +72,13 @@ test('listener count', t => {
 test('type enforcing', t => {
 	// Non-function passed to `exitHook`.
 	t.throws(() => {
+		// @ts-expect-error - testing type enforcement
 		exitHook(null);
 	}, {instanceOf: TypeError});
 
 	// Non-function passed to `asyncExitHook`.
 	t.throws(() => {
+		// @ts-expect-error - testing type enforcement
 		asyncExitHook(null, {
 			minimumWait: 100,
 		});
@@ -85,6 +88,7 @@ test('type enforcing', t => {
 
 	// Non-numeric passed to `minimumWait` option.
 	t.throws(() => {
+		// @ts-expect-error - testing type enforcement
 		asyncExitHook(async () => true, {});
 	});
 });

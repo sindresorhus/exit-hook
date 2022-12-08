@@ -1,0 +1,16 @@
+{
+	"extends": "@sindresorhus/tsconfig",
+	"compilerOptions": {
+		"outDir": "dist",
+		"noPropertyAccessFromIndexSignature": false,
+		"isolatedModules": true
+	},
+	"files": [
+		"source/index.ts"
+	],
+	"ts-node": {
+		"transpileOnly": true,
+		"files": true,
+		"experimentalResolver": true
+	}
+}

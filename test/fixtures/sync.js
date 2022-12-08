@@ -1,5 +1,5 @@
 import process from 'node:process';
-import exitHook from '../index.js';
+import exitHook from '../../dist/index.js';
 
 exitHook(() => {
 	console.log('foo');

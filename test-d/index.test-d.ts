@@ -1,5 +1,5 @@
 import {expectType} from 'tsd';
-import exitHook, {asyncExitHook} from './index.js';
+import exitHook, {asyncExitHook} from '../source/index.js';
 
 const unsubscribe = exitHook(() => {}); // eslint-disable-line @typescript-eslint/no-empty-function
 

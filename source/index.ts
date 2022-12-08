@@ -1,12 +1,16 @@
 import process from 'node:process';
 
-const asyncCallbacks = new Set();
-const callbacks = new Set();
+export type AsyncCallback = () => Promise<void>;
+export type Callback = () => void;
+type AsyncCallbackConfig = [AsyncCallback, number];
+
+const asyncCallbacks = new Set<AsyncCallbackConfig>();
+const callbacks = new Set<Callback>();
 
 let isCalled = false;
 let isRegistered = false;
 
-async function exit(shouldManuallyExit, isSynchronous, signal) {
+async function exit(shouldManuallyExit: boolean, isSynchronous: boolean, signal: number) {
 	if (isCalled) {
 		return;
 	}
@@ -24,7 +28,7 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 	}
 
 	const done = (force = false) => {
-		if (force === true || shouldManuallyExit === true) {
+		if (force || shouldManuallyExit) {
 			process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
 		}
 	};
@@ -55,12 +59,18 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 	done();
 }
 
-function addHook(options) {
+type AddHookOptions = {
+	isSynchronous: boolean;
+	minimumWait?: number;
+	onExit: Callback | AsyncCallback;
+};
+
+function addHook(options: AddHookOptions) {
 	const {onExit, minimumWait, isSynchronous} = options;
-	const asyncCallbackConfig = [onExit, minimumWait];
+	const asyncCallbackConfig: AsyncCallbackConfig = [(onExit as AsyncCallback), minimumWait!];
 
 	if (isSynchronous) {
-		callbacks.add(onExit);
+		callbacks.add(onExit as Callback);
 	} else {
 		asyncCallbacks.add(asyncCallbackConfig);
 	}
@@ -84,21 +94,21 @@ function addHook(options) {
 		// since the event loop is never called after it.
 		process.on('message', message => {
 			if (message === 'shutdown') {
-				exit(true, true, -128);
+				void exit(true, true, -128);
 			}
 		});
 	}
 
 	return () => {
 		if (isSynchronous) {
-			callbacks.delete(onExit);
+			callbacks.delete(onExit as Callback);
 		} else {
 			asyncCallbacks.delete(asyncCallbackConfig);
 		}
 	};
 }
 
-export default function exitHook(onExit) {
+export default function exitHook(onExit: Callback) {
 	if (typeof onExit !== 'function') {
 		throw new TypeError('onExit must be a function');
 	}
@@ -109,7 +119,14 @@ export default function exitHook(onExit) {
 	});
 }
 
-export function asyncExitHook(onExit, options) {
+export type Options = {
+	/**
+	 * The amount of time in milliseconds that the `onExit` function is expected to take.
+	 */
+	minimumWait: number;
+};
+
+export function asyncExitHook(onExit: AsyncCallback, options: Options) {
 	if (typeof onExit !== 'function') {
 		throw new TypeError('onExit must be a function');
 	}
@@ -126,5 +143,5 @@ export function asyncExitHook(onExit, options) {
 }
 
 export function gracefulExit(signal = 0) {
-	exit(true, false, -128 + signal);
+	void exit(true, false, -128 + signal);
 }
