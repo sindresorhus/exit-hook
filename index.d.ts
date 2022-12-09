@@ -56,7 +56,7 @@ throw new Error('🦄');
 //=> 'Exiting'
 
 // Removing an exit hook:
-const unsubscribe = asyncExitHook(() => {}, { minimumWait: 500 });
+const unsubscribe = asyncExitHook(() => {}, {minimumWait: 500});
 
 unsubscribe();
 ```
