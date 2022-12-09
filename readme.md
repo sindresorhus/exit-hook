@@ -72,6 +72,8 @@ The callback function to execute when the process exits via `gracefulExit`, and 
 
 #### options
 
+Type: `object`
+
 ##### minimumWait
 
 Type: `number`
