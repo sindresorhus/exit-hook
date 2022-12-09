@@ -56,12 +56,13 @@ throw new Error('🦄');
 //=> 'Exiting'
 
 // Removing an exit hook:
-const unsubscribe = asyncExitHook(() => {}, {});
+const unsubscribe = asyncExitHook(() => {}, 200);
 
 unsubscribe();
 ```
 */
-export function asyncExitHook(onExit: () => (void | Promise<void>), options: Options): () => void;
+export declare function asyncExitHook(onExit: () => (void | Promise<void>), minimumWait: number): () => void;
+export declare function asyncExitHook(onExit: () => (void | Promise<void>), options: Options): () => void;
 
 /**
 Exit the process and make a best-effort to complete all asynchronous hooks.
@@ -83,11 +84,11 @@ asyncExitHook(() => {
 gracefulExit();
 ```
 */
-export function gracefulExit(signal?: number): void;
+export declare function gracefulExit(signal?: number): void;
 
-export interface Options {
+export type Options = {
 	/**
 	The amount of time in milliseconds that the `onExit` function is expected to take.
 	*/
 	minimumWait: number;
-}
+};

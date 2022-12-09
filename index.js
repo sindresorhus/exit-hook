@@ -114,13 +114,20 @@ export function asyncExitHook(onExit, options = {}) {
 		throw new TypeError('onExit must be a function');
 	}
 
-	if (!(typeof options.minimumWait === 'number' && options.minimumWait > 0)) {
+	let minimumWait;
+	if (typeof options === 'number') {
+		minimumWait = options;
+	} else if (typeof options.minimumWait === 'number' && options.minimumWait > 0) {
+		minimumWait = options.minimumWait;
+	}
+
+	if (!(typeof minimumWait === 'number' && minimumWait > 0)) {
 		throw new TypeError('minimumWait must be set to a positive numeric value');
 	}
 
 	return addHook({
 		onExit,
-		minimumWait: options.minimumWait,
+		minimumWait,
 		isSynchronous: false,
 	});
 }

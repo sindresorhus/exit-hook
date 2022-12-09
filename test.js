@@ -18,7 +18,7 @@ test('main-empty', async t => {
 
 test('main-async', async t => {
 	const {stdout, stderr, exitCode} = await execa(process.execPath, ['./fixtures/async.js']);
-	t.is(stdout, 'foo\nbar\nquux');
+	t.is(stdout, 'foo\nbar\nquux\nquz');
 	t.is(stderr, '');
 	t.is(exitCode, 0);
 });

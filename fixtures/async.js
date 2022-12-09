@@ -30,6 +30,30 @@ asyncExitHook(
 	},
 );
 
+asyncExitHook(
+	async () => {
+		await new Promise(resolve => {
+			setTimeout(() => {
+				resolve();
+			}, 500);
+		});
+		console.log('wut');
+	},
+	200,
+);
+
+asyncExitHook(
+	async () => {
+		await new Promise(resolve => {
+			setTimeout(() => {
+				resolve();
+			}, 100);
+		});
+		console.log('quz');
+	},
+	200,
+);
+
 if (process.env.EXIT_HOOK_SYNC === '1') {
 	process.exit(0); // eslint-disable-line unicorn/no-process-exit
 }
