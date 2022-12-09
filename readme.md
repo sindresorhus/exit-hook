@@ -52,7 +52,7 @@ Returns a function that removes the hook when called.
 
 #### onExit
 
-Type: `function(): void`
+Type: `() => void`
 
 The callback function to execute when the process exits.
 
@@ -66,7 +66,7 @@ Please see [Async Notes](#asynchronous-exit-notes) for considerations when using
 
 #### onExit
 
-Type: `function(): void | Promise<void>`
+Type: `() => (void | Promise<void>)`
 
 The callback function to execute when the process exits via `gracefulExit`, and will be wrapped in `Promise.resolve`.
 
