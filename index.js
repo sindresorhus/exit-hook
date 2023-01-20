@@ -23,14 +23,16 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 		].join(' '));
 	}
 
+	const exitCode = 128 + signal;
+
 	const done = (force = false) => {
 		if (force === true || shouldManuallyExit === true) {
-			process.exit(128 + signal); // eslint-disable-line unicorn/no-process-exit
+			process.exit(exitCode); // eslint-disable-line unicorn/no-process-exit
 		}
 	};
 
 	for (const callback of callbacks) {
-		callback();
+		callback(exitCode);
 	}
 
 	if (isSynchronous) {
@@ -42,7 +44,7 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 	let forceAfter = 0;
 	for (const [callback, wait] of asyncCallbacks) {
 		forceAfter = Math.max(forceAfter, wait);
-		promises.push(Promise.resolve(callback()));
+		promises.push(Promise.resolve(callback(exitCode)));
 	}
 
 	// Force exit if we exceeded our wait value

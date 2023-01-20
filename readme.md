@@ -17,8 +17,8 @@ npm install exit-hook
 ```js
 import exitHook from 'exit-hook';
 
-exitHook(() => {
-	console.log('Exiting');
+exitHook(signal => {
+	console.log(`Exiting with signal: ${signal}`);
 });
 
 // You can add multiple hooks, even across files
@@ -52,7 +52,7 @@ Returns a function that removes the hook when called.
 
 #### onExit
 
-Type: `() => void`
+Type: `(signal: number) => void`
 
 The callback function to execute when the process exits.
 
@@ -66,7 +66,7 @@ Please see [Async Notes](#asynchronous-exit-notes) for considerations when using
 
 #### onExit
 
-Type: `() => (void | Promise<void>)`
+Type: `(signal: number) => (void | Promise<void>)`
 
 The callback function to execute when the process exits via `gracefulExit`, and will be wrapped in `Promise.resolve`.
 
