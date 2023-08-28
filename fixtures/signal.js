@@ -7,7 +7,7 @@ exitHook(signal => {
 asyncExitHook(async signal => {
 	console.log(signal);
 }, {
-	minimumWait: 200,
+	wait: 200,
 });
 
 setInterval(() => {}, 1 << 30);

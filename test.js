@@ -58,7 +58,7 @@ test('listener count', t => {
 	const unsubscribe4 = asyncExitHook(
 		async () => {},
 		{
-			minimumWait: 100,
+			wait: 100,
 		},
 	);
 	t.is(process.listenerCount('exit'), 1);
@@ -77,13 +77,18 @@ test('type enforcing', t => {
 	// Non-function passed to `asyncExitHook`.
 	t.throws(() => {
 		asyncExitHook(null, {
-			minimumWait: 100,
+			wait: 100,
 		});
 	}, {
 		instanceOf: TypeError,
 	});
 
-	// Non-numeric passed to `minimumWait` option.
+	// Non-numeric passed to `wait` option.
+	t.throws(() => {
+		asyncExitHook(async () => true, {wait: 'abc'});
+	});
+
+	// Empty value passed to `wait` option.
 	t.throws(() => {
 		asyncExitHook(async () => true, {});
 	});

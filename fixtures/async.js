@@ -26,7 +26,7 @@ asyncExitHook(
 		console.log('quux');
 	},
 	{
-		minimumWait: 200,
+		wait: 200,
 	},
 );
 

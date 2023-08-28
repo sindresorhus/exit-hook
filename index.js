@@ -58,8 +58,8 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 }
 
 function addHook(options) {
-	const {onExit, minimumWait, isSynchronous} = options;
-	const asyncCallbackConfig = [onExit, minimumWait];
+	const {onExit, wait, isSynchronous} = options;
+	const asyncCallbackConfig = [onExit, wait];
 
 	if (isSynchronous) {
 		callbacks.add(onExit);
@@ -116,13 +116,13 @@ export function asyncExitHook(onExit, options = {}) {
 		throw new TypeError('onExit must be a function');
 	}
 
-	if (!(typeof options.minimumWait === 'number' && options.minimumWait > 0)) {
-		throw new TypeError('minimumWait must be set to a positive numeric value');
+	if (!(typeof options.wait === 'number' && options.wait > 0)) {
+		throw new TypeError('wait must be set to a positive numeric value');
 	}
 
 	return addHook({
 		onExit,
-		minimumWait: options.minimumWait,
+		wait: options.wait,
 		isSynchronous: false,
 	});
 }

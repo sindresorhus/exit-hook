@@ -53,7 +53,7 @@ import {asyncExitHook} from 'exit-hook';
 asyncExitHook(() => {
 	console.log('Exiting');
 }, {
-	minimumWait: 500
+	wait: 500
 });
 
 throw new Error('🦄');
@@ -61,7 +61,7 @@ throw new Error('🦄');
 //=> 'Exiting'
 
 // Removing an exit hook:
-const unsubscribe = asyncExitHook(() => {}, {minimumWait: 500});
+const unsubscribe = asyncExitHook(() => {}, {wait: 500});
 
 unsubscribe();
 ```
@@ -83,7 +83,7 @@ import {asyncExitHook, gracefulExit} from 'exit-hook';
 asyncExitHook(() => {
 	console.log('Exiting');
 }, {
-	minimumWait: 500
+	wait: 500
 });
 
 // Instead of `process.exit()`
@@ -94,7 +94,7 @@ export function gracefulExit(signal?: number): void;
 
 export interface Options {
 	/**
-	The amount of time in milliseconds that the `onExit` function is expected to take.
+	The amount of time in milliseconds that the `onExit` function is expected to take. When multiple async handlers are registered, the longest `wait` time will be used.
 	*/
-	minimumWait: number;
+	wait: number;
 }
