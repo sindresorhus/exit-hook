@@ -74,11 +74,11 @@ The callback function to execute when the process exits via `gracefulExit`, and 
 
 Type: `object`
 
-##### minimumWait
+##### wait
 
 Type: `number`
 
-The amount of time in milliseconds that the `onExit` function is expected to take.
+The amount of time in milliseconds that the `onExit` function is expected to take. When multiple async handlers are registered, the longest `wait` time will be used.
 
 ```js
 import {asyncExitHook} from 'exit-hook';
@@ -86,7 +86,7 @@ import {asyncExitHook} from 'exit-hook';
 asyncExitHook(async () => {
 	console.log('Exiting');
 }, {
-	minimumWait: 300
+	wait: 300
 });
 
 throw new Error('🦄');
@@ -102,7 +102,7 @@ import {asyncExitHook} from 'exit-hook';
 const unsubscribe = asyncExitHook(async () => {
 	console.log('Exiting');
 }, {
-	minimumWait: 300
+	wait: 300
 });
 
 unsubscribe();
@@ -135,4 +135,4 @@ Node.js does not offer an asynchronous shutdown API by default [#1](https://gith
 
 If you have asynchronous hooks registered and your Node.js process is terminated in a synchronous manner, a `SYNCHRONOUS TERMINATION NOTICE` error will be logged to the console. To avoid this, ensure you're only exiting via `gracefulExit` or that an upstream process manager is sending a `SIGINT` or `SIGTERM` signal to Node.js.
 
-Asynchronous hooks should make a "best effort" to perform their tasks within the `minimumWait` time, but also be written to assume they may not complete their tasks before termination.
+Asynchronous hooks should make a "best effort" to perform their tasks within the `wait` time, but also be written to assume they may not complete their tasks before termination.
