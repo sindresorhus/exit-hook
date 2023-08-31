@@ -1,6 +1,6 @@
 import process from 'node:process';
 import test from 'ava';
-import execa from 'execa';
+import {execa} from 'execa';
 import exitHook, {asyncExitHook} from './index.js';
 
 test('main', async t => {

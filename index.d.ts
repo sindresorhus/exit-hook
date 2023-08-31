@@ -92,9 +92,9 @@ gracefulExit();
 */
 export function gracefulExit(signal?: number): void;
 
-export interface Options {
+export type Options = {
 	/**
 	The amount of time in milliseconds that the `onExit` function is expected to take. When multiple async handlers are registered, the longest `wait` time will be used.
 	*/
-	wait: number;
-}
+	readonly wait: number;
+};

@@ -10,4 +10,4 @@ asyncExitHook(async signal => {
 	wait: 200,
 });
 
-setInterval(() => {}, 1 << 30);
+setInterval(() => {}, 1e9);

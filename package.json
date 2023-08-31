@@ -11,9 +11,12 @@
 		"url": "https://sindresorhus.com"
 	},
 	"type": "module",
-	"exports": "./index.js",
+	"exports": {
+		"types": "./index.d.ts",
+		"default": "./index.js"
+	},
 	"engines": {
-		"node": ">=18.0.0"
+		"node": ">=18"
 	},
 	"scripts": {
 		"test": "xo && ava && tsd"
@@ -41,9 +44,9 @@
 		"asynchronous"
 	],
 	"devDependencies": {
-		"ava": "^3.15.0",
-		"execa": "^5.1.1",
-		"tsd": "^0.17.0",
-		"xo": "^0.44.0"
+		"ava": "^5.3.1",
+		"execa": "^8.0.1",
+		"tsd": "^0.28.1",
+		"xo": "^0.56.0"
 	}
 }
