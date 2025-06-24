@@ -23,7 +23,7 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 		].join(' '));
 	}
 
-	const exitCode = 128 + signal;
+	const exitCode = (typeof process.exitCode === 'number') ? process.exitCode : 128 + signal;
 
 	const done = (force = false) => {
 		if (force === true || shouldManuallyExit === true) {
