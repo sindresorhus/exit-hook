@@ -163,4 +163,20 @@ for (const [signal, exitCode] of signalTests) {
 			t.is(error.stdout, `${exitCode}\n${exitCode}`);
 		}
 	});
+
+	test(`${signal} causes process.exitCode to be ignored`, async t => {
+		const subprocess = execa(process.execPath, ['./fixtures/signal-exit-code.js']);
+
+		setTimeout(() => {
+			subprocess.kill(signal);
+		}, 1000);
+
+		try {
+			await subprocess;
+		} catch (error) {
+			t.is(error.exitCode, exitCode);
+			t.is(error.stderr, '');
+			t.is(error.stdout, `${exitCode}\n${exitCode}`);
+		}
+	});
 }
