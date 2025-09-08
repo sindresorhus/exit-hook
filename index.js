@@ -23,7 +23,15 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 		].join(' '));
 	}
 
-	const exitCode = 128 + signal;
+	let exitCode = 0;
+
+	// A non-graceful signal should be preserved over process.exitCode
+	if (signal > 0) {
+		exitCode = 128 + signal;
+	// Respect process.exitCode for graceful exits
+	} else if (typeof process.exitCode === 'number' || typeof process.exitCode === 'string') {
+		exitCode = process.exitCode;
+	}
 
 	const done = (force = false) => {
 		if (force === true || shouldManuallyExit === true) {
