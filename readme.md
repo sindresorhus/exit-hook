@@ -127,6 +127,35 @@ Default: `0`
 
 The exit code to use. Same as the argument to `process.exit()`.
 
+## FAQ
+
+### Why don't my exit hooks run when using nodemon?
+
+By default, nodemon uses `SIGUSR2` to restart your app. Since `SIGUSR2` is a user-defined signal, exit-hook does not handle it to avoid conflicts with your app logic.
+
+Solution: Configure nodemon to use standard termination signals:
+
+```sh
+nodemon --signal SIGTERM your-app.js
+```
+
+Or in your `nodemon.json`:
+
+```json
+{
+	"signal": "SIGTERM"
+}
+```
+
+Alternatively, you can handle `SIGUSR2` in your app if you specifically need nodemon's default behavior:
+
+```js
+// Handle nodemon restart signal
+process.on('SIGUSR2', () => {
+	gracefulExit();
+});
+```
+
 ## Asynchronous Exit Notes
 
 **tl;dr** If you have 100% control over how your process terminates, then you can swap `exitHook` and `process.exit` for `asyncExitHook` and `gracefulExit` respectively. Otherwise, keep reading to understand important tradeoffs if you're using `asyncExitHook`.
