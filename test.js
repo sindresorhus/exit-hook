@@ -10,10 +10,32 @@ test('main', async t => {
 	t.is(exitCode, 0);
 });
 
+test('main with exitCode', async t => {
+	try {
+		await execa(process.execPath, ['./fixtures/sync-exit-code.js']);
+		t.fail();
+	} catch ({stdout, stderr, exitCode}) {
+		t.is(stdout, 'foo\nbar');
+		t.is(stderr, '');
+		t.is(exitCode, 1);
+	}
+});
+
 test('main-empty', async t => {
 	const {stderr, exitCode} = await execa(process.execPath, ['./fixtures/empty.js']);
 	t.is(stderr, '');
 	t.is(exitCode, 0);
+});
+
+test('main-empty with exitCode', async t => {
+	try {
+		await execa(process.execPath, ['./fixtures/empty-exit-code.js']);
+		t.fail();
+	} catch ({stdout, stderr, exitCode}) {
+		t.is(stdout, '');
+		t.is(stderr, '');
+		t.is(exitCode, 1);
+	}
 });
 
 test('main-async', async t => {
@@ -21,6 +43,17 @@ test('main-async', async t => {
 	t.is(stdout, 'foo\nbar\nquux');
 	t.is(stderr, '');
 	t.is(exitCode, 0);
+});
+
+test('main-async with exitCode', async t => {
+	try {
+		await execa(process.execPath, ['./fixtures/async-exit-code.js']);
+		t.fail();
+	} catch ({stdout, stderr, exitCode}) {
+		t.is(stdout, 'foo\nbar\nquux');
+		t.is(stderr, '');
+		t.is(exitCode, 1);
+	}
 });
 
 test('main-async-notice', async t => {
@@ -32,6 +65,21 @@ test('main-async-notice', async t => {
 	t.is(stdout, 'foo\nbar');
 	t.regex(stderr, /SYNCHRONOUS TERMINATION NOTICE/);
 	t.is(exitCode, 0);
+});
+
+test('main-async-notice with exitCode', async t => {
+	try {
+		await execa(process.execPath, ['./fixtures/async-exit-code.js'], {
+			env: {
+				EXIT_HOOK_SYNC: '1',
+			},
+		});
+		t.fail();
+	} catch ({stdout, stderr, exitCode}) {
+		t.is(stdout, 'foo\nbar');
+		t.regex(stderr, /SYNCHRONOUS TERMINATION NOTICE/);
+		t.is(exitCode, 1);
+	}
 });
 
 test('listener count', t => {
@@ -102,6 +150,22 @@ const signalTests = [
 for (const [signal, exitCode] of signalTests) {
 	test(signal, async t => {
 		const subprocess = execa(process.execPath, ['./fixtures/signal.js']);
+
+		setTimeout(() => {
+			subprocess.kill(signal);
+		}, 1000);
+
+		try {
+			await subprocess;
+		} catch (error) {
+			t.is(error.exitCode, exitCode);
+			t.is(error.stderr, '');
+			t.is(error.stdout, `${exitCode}\n${exitCode}`);
+		}
+	});
+
+	test(`${signal} causes process.exitCode to be ignored`, async t => {
+		const subprocess = execa(process.execPath, ['./fixtures/signal-exit-code.js']);
 
 		setTimeout(() => {
 			subprocess.kill(signal);
