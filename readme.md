@@ -122,10 +122,11 @@ gracefulExit();
 
 #### signal
 
-Type: `number`\
-Default: `0`
+Type: `number`
 
 The exit code to use. Same as the argument to `process.exit()`.
+
+If not specified, the process will exit with `process.exitCode` if set, otherwise `0`.
 
 ## FAQ
 

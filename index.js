@@ -135,6 +135,10 @@ export function asyncExitHook(onExit, options = {}) {
 	});
 }
 
-export function gracefulExit(signal = 0) {
-	exit(true, false, -128 + signal);
+export function gracefulExit(signal) {
+	if (signal !== undefined) {
+		process.exitCode = signal;
+	}
+
+	exit(true, false, -128);
 }

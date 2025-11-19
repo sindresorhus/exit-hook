@@ -82,6 +82,17 @@ test('main-async-notice with exitCode', async t => {
 	}
 });
 
+test('gracefulExit with explicit exit code', async t => {
+	try {
+		await execa(process.execPath, ['./fixtures/graceful-exit-code.js']);
+		t.fail();
+	} catch ({stdout, stderr, exitCode}) {
+		t.is(stdout, 'exiting with code 1');
+		t.is(stderr, '');
+		t.is(exitCode, 1);
+	}
+});
+
 test('listener count', t => {
 	// This function is used as on node20+ flushSync is added internally to the exit handler of nodejs
 	const exitListenerCount = () => process.listeners('exit').filter(fn => fn.name !== 'flushSync').length;

@@ -73,7 +73,7 @@ Exit the process and make a best-effort to complete all asynchronous hooks.
 
 If you are using `asyncExitHook`, consider using `gracefulExit()` instead of `process.exit()` to ensure all asynchronous tasks are given an opportunity to run.
 
-@param signal - The exit code to use. Same as the argument to `process.exit()`.
+@param signal - The exit code to use. Same as the argument to `process.exit()`. If not specified, the process will exit with `process.exitCode` if set, otherwise `0`.
 @see https://github.com/sindresorhus/exit-hook/blob/main/readme.md#asynchronous-exit-notes
 
 @example
