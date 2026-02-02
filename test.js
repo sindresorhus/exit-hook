@@ -1,7 +1,12 @@
 import process from 'node:process';
+import {spawn} from 'node:child_process';
+import {once} from 'node:events';
+import {setTimeout as delay} from 'node:timers/promises';
 import test from 'ava';
 import {execa} from 'execa';
 import exitHook, {asyncExitHook} from './index.js';
+
+const isContinuousIntegration = Boolean(process.env.CI);
 
 test('main', async t => {
 	const {stdout, stderr, exitCode} = await execa(process.execPath, ['./fixtures/sync.js']);
@@ -153,6 +158,105 @@ test('type enforcing', t => {
 	t.throws(() => {
 		asyncExitHook(async () => true, {});
 	});
+});
+
+test('flushes stdout before exit with async hook', async t => {
+	const lineCount = 10_000;
+	const {stdout, exitCode} = await execa(process.execPath, ['./fixtures/flush-stdout.js', String(lineCount)]);
+	const lines = stdout.split('\n').filter(Boolean);
+	t.is(lines.length, lineCount);
+	t.is(exitCode, 0);
+});
+
+test('flushes stdout before exit with short wait and backpressure', async t => {
+	const lineCount = 20_000;
+	const childProcess = spawn(process.execPath, ['./fixtures/flush-stdout-short-wait.js', String(lineCount)], {
+		stdio: ['ignore', 'pipe', 'ignore'],
+	});
+
+	childProcess.stdout.setEncoding('utf8');
+
+	let stdout = '';
+	childProcess.stdout.on('data', data => {
+		stdout += data;
+	});
+
+	childProcess.stdout.pause();
+	await delay(200);
+	childProcess.stdout.resume();
+
+	const [exitCode] = await once(childProcess, 'close');
+	t.is(exitCode, 0);
+
+	const lines = stdout.split('\n').filter(Boolean);
+	t.is(lines.length, lineCount);
+});
+
+test('flushes stdout and stderr before exit with short wait and backpressure', async t => {
+	const lineCount = 10_000;
+	const childProcess = spawn(process.execPath, ['./fixtures/flush-stdout-stderr-short-wait.js', String(lineCount)], {
+		stdio: ['ignore', 'pipe', 'pipe'],
+	});
+
+	childProcess.stdout.setEncoding('utf8');
+	childProcess.stderr.setEncoding('utf8');
+
+	let stdout = '';
+	let stderr = '';
+	childProcess.stdout.on('data', data => {
+		stdout += data;
+	});
+	childProcess.stderr.on('data', data => {
+		stderr += data;
+	});
+
+	childProcess.stdout.pause();
+	childProcess.stderr.pause();
+	await delay(200);
+	childProcess.stdout.resume();
+	childProcess.stderr.resume();
+
+	const [exitCode] = await once(childProcess, 'close');
+	t.is(exitCode, 0);
+
+	const stdoutLines = stdout.split('\n').filter(Boolean);
+	const stderrLines = stderr.split('\n').filter(Boolean);
+	t.is(stdoutLines.length, lineCount);
+	t.is(stderrLines.length, lineCount);
+});
+
+test('flush timeout prevents hanging when stdout is blocked', async t => {
+	t.timeout(isContinuousIntegration ? 15_000 : 8000);
+
+	const startTime = Date.now();
+	const childProcess = spawn(process.execPath, ['./fixtures/flush-stdout-timeout.js'], {
+		stdio: ['ignore', 'pipe', 'ignore'],
+	});
+	const closePromise = once(childProcess, 'close');
+
+	childProcess.stdout.pause();
+	await delay(1500);
+	childProcess.stdout.resume();
+
+	const [exitCode] = await closePromise;
+	const elapsedMilliseconds = Date.now() - startTime;
+	t.is(exitCode, 0);
+	t.true(elapsedMilliseconds >= 900);
+});
+
+test('flushes stdout before exit with sync hook', async t => {
+	const lineCount = 10_000;
+	const {stdout, exitCode} = await execa(process.execPath, ['./fixtures/flush-stdout-sync.js', String(lineCount)]);
+	const lines = stdout.split('\n').filter(Boolean);
+	t.is(lines.length, lineCount);
+	t.is(exitCode, 0);
+});
+
+test('does not throw when stdio is closed before flush', async t => {
+	const {stdout, stderr, exitCode} = await execa(process.execPath, ['./fixtures/closed-stdio.js']);
+	t.is(stdout, '');
+	t.is(stderr, '');
+	t.is(exitCode, 0);
 });
 
 const signalTests = [

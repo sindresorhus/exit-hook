@@ -6,6 +6,41 @@ const callbacks = new Set();
 let isCalled = false;
 let isRegistered = false;
 
+async function flushStdio() {
+	const flush = stream => new Promise(resolve => {
+		if (!stream || !stream.writable || stream.writableEnded || stream.destroyed) {
+			resolve();
+			return;
+		}
+
+		const onError = () => {
+			stream.off('error', onError);
+			resolve();
+		};
+
+		stream.once('error', onError);
+
+		try {
+			stream.write('', () => {
+				stream.off('error', onError);
+				resolve();
+			});
+		} catch {
+			stream.off('error', onError);
+			resolve();
+		}
+	});
+
+	const timeout = new Promise(resolve => {
+		setTimeout(resolve, 1000);
+	});
+
+	await Promise.race([
+		Promise.all([flush(process.stdout), flush(process.stderr)]),
+		timeout,
+	]);
+}
+
 async function exit(shouldManuallyExit, isSynchronous, signal) {
 	if (isCalled) {
 		return;
@@ -56,12 +91,16 @@ async function exit(shouldManuallyExit, isSynchronous, signal) {
 	}
 
 	// Force exit if we exceeded our wait value
-	const asyncTimer = setTimeout(() => {
-		done(true);
-	}, forceAfter);
+	const asyncTimer = forceAfter > 0
+		? setTimeout(() => {
+			done(true);
+		}, forceAfter)
+		: undefined;
 
 	await Promise.all(promises);
+	// Let flushStdio handle its own timeout without the force-exit timer.
 	clearTimeout(asyncTimer);
+	await flushStdio();
 	done();
 }
 
